@@ -1,15 +1,45 @@
+using Lib.API.Extensions;
+using Lib.Application.Services;
+using Lib.Core.Abstractions;
+using Lib.Infrastructure;
+using Lib.Infrastructure.Identity;
+using Lib.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-// Add services to the container.
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+
+services.AddDbContext<LibraryDbContext>(options =>
+{
+    options.UseNpgsql(configuration.GetConnectionString(nameof(LibraryDbContext)));
+});
+
+services.AddApiAutorization(configuration,
+    builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
+
+services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")));
+
+
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+services.AddScoped<IUsersService, UsersService>();
+services.AddScoped<IPasswordHasher, PasswordHasher>();
+services.AddScoped<ITokenService, TokenService>();
+
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +47,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.MapControllers();
+
 
 app.Run();

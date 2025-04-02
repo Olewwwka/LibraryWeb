@@ -23,9 +23,9 @@ namespace Lib.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<User> Register(string name, string email, string password)
+        public async Task<User> Register(string name, string email, string password, CancellationToken cancellationToken)
         {
-            var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email);
+            var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email, cancellationToken);
 
             if (existingUser != null) throw new Exception();  //========================= 
 
@@ -34,14 +34,14 @@ namespace Lib.Application.Services
             var user = new User(name, email, passwordHash);
             var userEntity = _mapper.Map<UserEntity>(user);
 
-            await _unitOfWork.UsersRepository.AddUserAsync(userEntity);
+            await _unitOfWork.UsersRepository.AddUserAsync(userEntity, cancellationToken);
 
             return user;
         }
 
-        public async Task<(User, string accessToken, string RefreshToken)> Login(string email, string password)
+        public async Task<(User, string accessToken, string RefreshToken)> Login(string email, string password, CancellationToken cancellationToken)
         {
-            var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email);
+            var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email, cancellationToken);
             if (existingUser == null) throw new Exception();  //========================= 
 
             if (!_passwordHasher.Verify(password, existingUser.PasswordHash)) throw new Exception();

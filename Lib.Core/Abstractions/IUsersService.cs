@@ -9,7 +9,7 @@ namespace Lib.Core.Abstractions
 {
     public interface IUsersService
     {
-        Task<User> Register(string name, string email, string password);
-        Task<(User, string accessToken, string RefreshToken)> Login(string email, string password);
+        Task<User> Register(string name, string email, string password, CancellationToken cancellationToken);
+        Task<(User, string accessToken, string RefreshToken)> Login(string email, string password, CancellationToken cancellationToken);
     }
 }

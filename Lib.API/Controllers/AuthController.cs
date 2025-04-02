@@ -19,16 +19,16 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IResult> Register(RegisterRequest request)
+        public async Task<IResult> Register(RegisterRequest request, CancellationToken cancellationToken)
         { 
-            var user = await _usersService.Register(request.Name, request.Email, request.Password);
+            var user = await _usersService.Register(request.Name, request.Email, request.Password, cancellationToken);
             return Results.Ok(user);
         }
 
         [HttpPost("login")]
-        public async Task<IResult> Login(LoginRequest request)
+        public async Task<IResult> Login(LoginRequest request, CancellationToken cancellationToken)
         {
-            var (user, accessToken, refreshToken) = await _usersService.Login(request.Email, request.Password);
+            var (user, accessToken, refreshToken) = await _usersService.Login(request.Email, request.Password, cancellationToken);
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -42,13 +42,5 @@ namespace Lib.API.Controllers
 
             return Results.Ok(user);
         }
-
-        [HttpGet("users")]
-        [Authorize]
-        public async Task<IResult> GetUsers()
-        {
-            return Results.Ok();
-        }
-
     }
 }

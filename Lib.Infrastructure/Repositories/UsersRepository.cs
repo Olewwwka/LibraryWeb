@@ -19,18 +19,26 @@ namespace Lib.Infrastructure.Repositories
 
         public async Task<UserEntity> GetUserByIdAsync(Guid id)
         {
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == id);
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(user => user.Id == id);
             return user;
         }
 
-        public async Task<UserEntity> GetUserByEmailAsync(string email)
+        public async Task<UserEntity> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Email == email);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(user => user.Email == email, cancellationToken);
             return user;
         }
-        public async Task AddUserAsync(UserEntity user)
+        public async Task AddUserAsync(UserEntity user, CancellationToken cancellationToken)
         {
-            await _context.AddAsync(user);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _context.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync();
         }
     }

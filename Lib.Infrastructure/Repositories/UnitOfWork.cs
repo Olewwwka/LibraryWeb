@@ -12,11 +12,13 @@ namespace Lib.Infrastructure.Repositories
         public LibraryDbContext _dbContext;
         public IUsersRepository UsersRepository { get; }
         public IBooksRepository BooksRepository { get; }
+        public IAuthorsRepository AuthorsRepository { get; }
         public UnitOfWork(LibraryDbContext dbcontext)
         {
             _dbContext = dbcontext;
             UsersRepository = new UsersRepository(_dbContext);
             BooksRepository = new BooksRepository(_dbContext);
+            AuthorsRepository = new AuthorsRepository(_dbContext);
         }
     }
 }

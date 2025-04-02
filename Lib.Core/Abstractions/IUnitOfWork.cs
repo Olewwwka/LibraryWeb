@@ -10,5 +10,6 @@ namespace Lib.Core.Abstractions
     {
         IUsersRepository UsersRepository { get; }
         IBooksRepository BooksRepository { get; }
+        IAuthorsRepository AuthorsRepository { get; }
     }
 }

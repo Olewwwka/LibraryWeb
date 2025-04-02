@@ -18,8 +18,16 @@ namespace Lib.Application.Mappers
                   opt => opt.MapFrom(src => src.ReturnTime ?? DateTime.MinValue));
 
             CreateMap<BookEntity, Book>()
-                .ForMember(dest => dest.IsBorrowed, opt => opt.Ignore())
-                .ForMember(dest => dest.IsOverdue, opt => opt.Ignore());
+              .ConstructUsing(src => new Book(
+                    src.ISBN,
+                    src.Name,
+                    src.Genre,
+                    src.Description,
+                    src.AuthorId))
+              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+              .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+              .ForMember(dest => dest.BorrowTime, opt => opt.MapFrom(src => src.BorrowTime))
+              .ForMember(dest => dest.ReturnTime, opt => opt.MapFrom(src => src.ReturnTime));
         }
     }
 }

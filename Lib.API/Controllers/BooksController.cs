@@ -31,5 +31,12 @@ namespace Lib.API.Controllers
 
             return Results.Ok(book);
         }
+        [HttpGet("{id}")]
+        public async Task<IResult> GetBookById(Guid id, CancellationToken cancellationToken)
+        {
+            var book = await _booksService.GetBookById(id, cancellationToken);
+
+            return Results.Ok(book);
+        }
     }
 }

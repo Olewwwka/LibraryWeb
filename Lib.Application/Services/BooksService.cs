@@ -38,5 +38,14 @@ namespace Lib.Application.Services
 
             return books;
         }
+
+        public async Task<Book> GetBookById(Guid id, CancellationToken cancellationToken)
+        {
+            var bookEntity = _unitOfWork.BooksRepository.GetBookByIdAsync(id, cancellationToken);
+
+            var book = _mapper.Map<Book>(bookEntity);
+
+            return book;
+        }
     }
 }

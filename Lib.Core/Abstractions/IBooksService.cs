@@ -12,5 +12,6 @@ namespace Lib.Core.Abstractions
     {
         Task<Book> AddBook(string isbn, string name, Genre genre, string description, Guid authorId, CancellationToken cancellationToken);
         Task<List<Book>> GetAllBooks(CancellationToken cancellationToken);
+        Task<Book> GetBookById(Guid id, CancellationToken cancellationToken);
     }
 }

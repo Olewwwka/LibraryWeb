@@ -33,6 +33,8 @@ services.AddSingleton<IConnectionMultiplexer>(sp =>
 
 services.AddScoped<IUnitOfWork, UnitOfWork>();
 services.AddScoped<IUsersService, UsersService>();
+services.AddScoped<IAuthorsService, AuthorsService>();
+services.AddScoped<IBooksService, BooksService>();
 services.AddScoped<IPasswordHasher, PasswordHasher>();
 services.AddScoped<ITokenService, TokenService>();
 

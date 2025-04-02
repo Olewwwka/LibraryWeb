@@ -9,8 +9,8 @@ namespace Lib.Core.Abstractions
 {
     public interface IUsersRepository
     {
-        Task<UserEntity> GetUserByEmailAsync(string email);
+        Task<UserEntity> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
         Task<UserEntity> GetUserByIdAsync(Guid id);
-        Task AddUserAsync(UserEntity user);
+        Task AddUserAsync(UserEntity user, CancellationToken cancellationToken);
     }
 }

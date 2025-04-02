@@ -9,5 +9,6 @@ namespace Lib.Core.Abstractions
     public interface IUnitOfWork
     {
         IUsersRepository UsersRepository { get; }
+        IBooksRepository BooksRepository { get; }
     }
 }

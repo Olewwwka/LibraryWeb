@@ -5,6 +5,7 @@ namespace Lib.Core.Entities
     public class BookEntity
     {
         public Guid Id { get; set; }
+        public string ISBN { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public Genre Genre { get; set; }
         public string Description { get; set; } = string.Empty;

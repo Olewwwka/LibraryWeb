@@ -19,8 +19,8 @@ var configuration = builder.Configuration;
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
+services.AddSwaggerGen(c =>
+{ 
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
     c.OperationFilter<FluentValidationOperationFilter>(); 
 });

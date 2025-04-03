@@ -1,4 +1,5 @@
 ﻿using Lib.Core.Abstractions;
+using Lib.Infrastructure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -7,13 +8,13 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Lib.Infrastructure.Identity
+namespace Lib.Infrastructure.Services
 {
-    public class TokenService: ITokenService
+    public class TokenService : ITokenService
     {
         private readonly JwtOptions _jwtOptions;
         private readonly IConnectionMultiplexer _redis;
-        public TokenService(IOptions<JwtOptions> jwtOptions, 
+        public TokenService(IOptions<JwtOptions> jwtOptions,
             IConnectionMultiplexer redis)
         {
             _jwtOptions = jwtOptions.Value;
@@ -51,7 +52,7 @@ namespace Lib.Infrastructure.Identity
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = false, 
+                ValidateLifetime = false,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _jwtOptions.Issuer,
                 ValidAudience = _jwtOptions.Audience,

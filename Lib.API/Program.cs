@@ -7,6 +7,7 @@ using Lib.Core.Abstractions;
 using Lib.Infrastructure;
 using Lib.Infrastructure.Identity;
 using Lib.Infrastructure.Repositories;
+using Lib.Infrastructure.Services;
 using MicroElements.Swashbuckle.FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -47,6 +48,14 @@ services.AddScoped<IAuthorsService, AuthorsService>();
 services.AddScoped<IBooksService, BooksService>();
 services.AddScoped<IPasswordHasher, PasswordHasher>();
 services.AddScoped<ITokenService, TokenService>();
+
+services.AddScoped<IBooksRepository, BooksRepository>();
+services.AddScoped<IUsersRepository, UsersRepository>();
+
+
+services.AddScoped<INotificationService, NotificationService>();
+services.AddHostedService<BooksOverdueService>();
+
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

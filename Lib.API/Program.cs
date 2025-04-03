@@ -2,7 +2,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Lib.API.Extensions;
 using Lib.API.Validators;
-using Lib.Application.Services;
 using Lib.Core.Abstractions;
 using Lib.Infrastructure;
 using Lib.Infrastructure.Identity;
@@ -43,9 +42,6 @@ services.AddFluentValidationAutoValidation();
 services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 services.AddScoped<IUnitOfWork, UnitOfWork>();
-services.AddScoped<IUsersService, UsersService>();
-services.AddScoped<IAuthorsService, AuthorsService>();
-services.AddScoped<IBooksService, BooksService>();
 services.AddScoped<IPasswordHasher, PasswordHasher>();
 services.AddScoped<ITokenService, TokenService>();
 
@@ -56,6 +52,7 @@ services.AddScoped<IUsersRepository, UsersRepository>();
 services.AddScoped<INotificationService, NotificationService>();
 services.AddHostedService<BooksOverdueService>();
 
+services.AddUseCases();
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

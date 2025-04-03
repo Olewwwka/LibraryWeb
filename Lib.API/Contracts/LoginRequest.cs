@@ -4,7 +4,7 @@ namespace Lib.API.Contracts
 {
     public record LoginRequest
     (
-       [Required] string Email,
-       [Required] string Password
+       string Email,
+       string Password
      );
 }

@@ -1,8 +1,6 @@
-﻿using Lib.Core.Abstractions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RegisterRequest = Lib.API.Contracts.RegisterRequest;
 using LoginRequest = Lib.API.Contracts.LoginRequest;
-using Lib.Core.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Lib.Application.UseCases.Auth;
 
@@ -45,13 +43,6 @@ namespace Lib.API.Controllers
             Responce.Cookies.Append("refreshToken", refreshToken, cookieOptions);
 
             return Results.Ok(user);
-        }
-
-        [HttpGet("users")]
-        [Authorize]
-        public async Task<IResult> GetUsers()
-        {
-            return Results.Ok();
         }
 
     }

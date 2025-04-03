@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
 using Lib.Core.Abstractions;
-using Lib.Core.DTOs;
+using Lib.Application.Models;
 using Lib.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Lib.Application.UseCases.Auth
 {

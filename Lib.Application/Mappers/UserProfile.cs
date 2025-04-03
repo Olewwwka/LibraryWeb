@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Lib.Core.DTOs;
+using Lib.Application.Models;
 using Lib.Core.Entities;
 
 namespace Lib.Application.Mappers

@@ -1,6 +1,5 @@
 ﻿using Lib.API.Contracts;
 using Lib.Application.UseCases.Authors;
-using Lib.Core.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lib.API.Controllers

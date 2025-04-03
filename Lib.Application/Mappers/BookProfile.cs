@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Lib.Core.Entities;
-using Lib.Core.Models;
+using Lib.Application.Models;
 
 namespace Lib.Application.Mappers
 {

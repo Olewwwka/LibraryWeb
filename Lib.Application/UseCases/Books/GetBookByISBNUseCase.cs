@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using Lib.Core.Abstractions;
-using Lib.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Lib.Application.Models;
 
 namespace Lib.Application.UseCases.Books
 {

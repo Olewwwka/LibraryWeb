@@ -42,5 +42,13 @@ namespace Lib.API.Controllers
 
             return Results.Ok(user);
         }
+
+        [HttpGet("users")]
+        [Authorize]
+        public async Task<IResult> GetUsers()
+        {
+            return Results.Ok();
+        }
+
     }
 }

@@ -25,7 +25,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IResult> AddBook(BookRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> AddBook(AddBookRequest request, CancellationToken cancellationToken)
         {
             var book = await _booksService.AddBook(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId, cancellationToken);
 

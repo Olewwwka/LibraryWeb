@@ -15,12 +15,10 @@ namespace Lib.Application.Mappers
         {
             CreateMap<Author, AuthorEntity>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) 
-                .ForMember(dest => dest.Books,
-                     opt => opt.MapFrom(src => src.Books));
+                .ForMember(dest => dest.Books, opt => opt.Ignore());
 
             CreateMap<AuthorEntity, Author>()
-                .ForMember(dest => dest.Books,
-                    opt => opt.MapFrom(src => src.Books));
+                .ForMember(dest => dest.Books, opt => opt.Ignore());
         }
     }
 }

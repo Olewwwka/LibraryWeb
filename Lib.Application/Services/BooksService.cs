@@ -41,11 +41,33 @@ namespace Lib.Application.Services
 
         public async Task<Book> GetBookById(Guid id, CancellationToken cancellationToken)
         {
-            var bookEntity = _unitOfWork.BooksRepository.GetBookByIdAsync(id, cancellationToken);
+            var bookEntity = await _unitOfWork.BooksRepository.GetBookByIdAsync(id, cancellationToken);
 
             var book = _mapper.Map<Book>(bookEntity);
 
             return book;
+        }
+
+        public async Task<Book> GetBookByISBN(string isbn, CancellationToken cancellationToken)
+        {
+            var bookEntity = await _unitOfWork.BooksRepository.GetBookByISBNAsync(isbn, cancellationToken);
+
+            var book = _mapper.Map<Book>(bookEntity);
+
+            return book;
+        }
+
+        public async Task<Guid> UpdateBookInfo(Guid id, string isbn, string name, Genre genre, string description, CancellationToken cancellationToken)
+        {
+            var guid = await _unitOfWork.BooksRepository.UpdateBookAsync(id, isbn, name, genre, description, cancellationToken);
+
+            return guid;
+        }
+
+        public async Task<Guid> DeleteBook(Guid id, CancellationToken cancellationToken)
+        {
+            var guid = await _unitOfWork.BooksRepository.DeleteBookAsync(id, cancellationToken);
+            return guid;
         }
     }
 }

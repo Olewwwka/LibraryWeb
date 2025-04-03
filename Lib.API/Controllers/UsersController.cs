@@ -1,5 +1,6 @@
 using Lib.API.Contracts;
 using Lib.Application.UseCases.Users;
+using Lib.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lib.API.Controllers
@@ -23,8 +24,20 @@ namespace Lib.API.Controllers
         [HttpPost("book/borrow")]
         public async Task<IResult> BorrowBook(BorrowBookRequest request, CancellationToken cancellationToken)
         {
-            var book = await _borrowBookUseCase.ExecuteAsync(request.UserId, request.BookId, request.BorrowTime, request.ReturnTime, cancellationToken);
-            return Results.Ok(book);
+            try
+            {
+                var book = await _borrowBookUseCase.ExecuteAsync(request.UserId, request.BookId, request.BorrowTime, request.ReturnTime, cancellationToken);
+                return Results.Ok(book);
+            }
+            catch(BookAlreadyBorrowedException)
+            {
+                throw new BookAlreadyBorrowedException("Book is already borrowed");
+            }
+            catch(NotFoundException)
+            {
+                throw new NotFoundException($"Book with ID {request.BookId} not found");
+            }
+
         }
         [HttpPost("book/return/{bookId}")]
         public async Task<IResult> ReturnBook(Guid bookId, CancellationToken cancellationToken)

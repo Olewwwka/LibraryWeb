@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Lib.API.Extensions;
+using Lib.API.Middlewares;
 using Lib.API.Validators;
 using Lib.Core.Abstractions;
 using Lib.Infrastructure;
@@ -70,6 +71,7 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+app.UseMiddleware<ExceptionHandler>();
 
 
 app.Run();

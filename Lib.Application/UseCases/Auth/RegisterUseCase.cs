@@ -2,6 +2,7 @@
 using Lib.Core.Abstractions;
 using Lib.Application.Models;
 using Lib.Core.Entities;
+using Lib.Core.Exceptions;
 
 
 namespace Lib.Application.UseCases.Auth
@@ -27,7 +28,7 @@ namespace Lib.Application.UseCases.Auth
         {
             var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email, cancellationToken);
 
-            if (existingUser != null) throw new Exception();  //========================= 
+            if (existingUser != null) throw new UserAlreadyExistsException("User with current email already exists");  //========================= 
 
             var passwordHash = _passwordHasher.Generate(password);
 

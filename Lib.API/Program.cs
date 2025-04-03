@@ -1,11 +1,16 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Lib.API.Extensions;
+using Lib.API.Validators;
 using Lib.Application.Services;
 using Lib.Core.Abstractions;
 using Lib.Infrastructure;
 using Lib.Infrastructure.Identity;
 using Lib.Infrastructure.Repositories;
+using MicroElements.Swashbuckle.FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +19,11 @@ var configuration = builder.Configuration;
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
+    c.OperationFilter<FluentValidationOperationFilter>(); 
+});
 
 services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
@@ -30,6 +38,8 @@ services.AddApiAutorization(configuration,
 services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")));
 
+services.AddFluentValidationAutoValidation();
+services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 services.AddScoped<IUnitOfWork, UnitOfWork>();
 services.AddScoped<IUsersService, UsersService>();

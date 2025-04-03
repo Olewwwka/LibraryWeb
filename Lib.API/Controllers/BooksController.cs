@@ -30,14 +30,16 @@ namespace Lib.API.Controllers
             var book = await _booksService.AddBook(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId, cancellationToken);
 
             return Results.Ok(book);
+        
         }
-        [HttpGet("id/{id}")]
+        [HttpGet("{id}")]
         public async Task<IResult> GetBookById(Guid id, CancellationToken cancellationToken)
         {
             var book = await _booksService.GetBookById(id, cancellationToken);
 
             return Results.Ok(book);
         }
+
         [HttpGet("isbn/{isbn}")]
         public async Task<IResult> GetBookByISBN(string isbn, CancellationToken cancellationToken)
         {
@@ -45,12 +47,14 @@ namespace Lib.API.Controllers
 
             return Results.Ok(book);
         }
+
         [HttpPatch("{id}")]
         public async Task<IResult> UpdateBook(Guid id, UpdateBookRequest request, CancellationToken cancellationToken)
         {
             var book = await _booksService.UpdateBookInfo(id, request.ISBN, request.Name, request.Genre, request.Description, cancellationToken);
             return Results.Ok(book);
         }
+
         [HttpDelete("{id}")]
         public async Task<IResult> DeleteBook(Guid id, CancellationToken cancellationToken)
         {

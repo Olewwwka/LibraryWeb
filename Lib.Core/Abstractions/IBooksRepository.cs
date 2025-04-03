@@ -16,12 +16,7 @@ namespace Lib.Core.Abstractions
             string description,
             CancellationToken cancellationToken);
         Task<Guid> DeleteBookAsync(Guid id, CancellationToken cancellationToken);
-        Task<BookEntity> BorrowBookAsync(
-          Guid bookId,
-          Guid userId,
-          DateTime borrowTime,
-          DateTime returnTime,
-          CancellationToken cancellationToken);
+        Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken);
 
     }
 }

@@ -26,6 +26,7 @@ namespace Lib.Infrastructure.Repositories
 
             return await _context.Books
                 .AsNoTracking()
+                .Where(books => books.User == null)
                 .ToListAsync(cancellationToken);
         }
 
@@ -88,32 +89,15 @@ namespace Lib.Infrastructure.Repositories
             await _context.SaveChangesAsync(cancellationToken);
             return id;
         }
-
-        public async Task<BookEntity> BorrowBookAsync(
-          Guid bookId,
-          Guid userId,
-          DateTime borrowTime,
-          DateTime returnTime,
-          CancellationToken cancellationToken)
+        public async Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            var bookEntity = await _context.Books
-                .FirstOrDefaultAsync(book => book.Id == bookId, cancellationToken);
-
-            if (bookEntity == null)
-                throw new KeyNotFoundException("Book not found");
-
-            if (bookEntity.UserId != null)
-                throw new InvalidOperationException("Book is already borrowed");
-
-            bookEntity.UserId = userId;
-            bookEntity.BorrowTime = borrowTime;
-            bookEntity.ReturnTime = returnTime;
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return bookEntity;
+            var books = await _context.Books
+                .AsNoTracking()
+                .Where(book => book.ReturnTime > DateTime.UtcNow)
+                .Include(book => book.User)
+                .ToListAsync(cancellationToken);
+            return books;
         }
     }
 }

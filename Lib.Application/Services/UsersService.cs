@@ -2,6 +2,7 @@
 using Lib.Core.Abstractions;
 using Lib.Core.DTOs;
 using Lib.Core.Entities;
+using Lib.Core.Models;
 using System.Security.Claims;
 
 namespace Lib.Application.Services
@@ -56,12 +57,35 @@ namespace Lib.Application.Services
             var jwtToken = _tokenService.GenerateAccessToken(claims);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            _tokenService.StoreRefreshTokenAsync(existingUser.Id, refreshToken);
+            await _tokenService.StoreRefreshTokenAsync(existingUser.Id, refreshToken);
 
             var user = _mapper.Map<User>(existingUser);
 
             return (user, jwtToken, refreshToken);
         }
 
+        public async Task<Book> BorrowBook(Guid userId, Guid bookId, DateTime borrowTime, DateTime returnTime, CancellationToken cancellationToken)
+        {
+            var bookEntity = await _unitOfWork.UsersRepository.BorrowBookAsync(userId, bookId, borrowTime, returnTime, cancellationToken);
+            var book = _mapper.Map<Book>(bookEntity);
+
+            return book;
+        }
+
+        public async Task<Book> ReturnBook(Guid bookId, CancellationToken cancellationToken)
+        {
+            var bookEntity = await _unitOfWork.UsersRepository.ReturnBookAsync(bookId, cancellationToken);
+            var book = _mapper.Map<Book>(bookEntity);
+
+            return book;
+        }
+
+        public async Task<List<Book>> GetUsersBorrowedBooks(Guid userId, CancellationToken cancellationToken)
+        {
+            var bookEntities = await _unitOfWork.UsersRepository.GetUserBorrowedBooksAsync(userId, cancellationToken);
+            var books = _mapper.Map<List<Book>>(bookEntities);
+
+            return books;
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace Lib.Infrastructure.Services
                     {
                         try
                         {
-                            _logger.LogInformation($"Sending overdue(book {book.Name}) notification to user {book.User.Email}");
+                            _logger.LogInformation($"Sending overdue(book {book.Name}) notification to user {book.User!.Email}");
                             await notificationService.SendOverdueNotificationAsync(book.User, book);
                         }
                         catch (Exception ex)
@@ -42,6 +42,7 @@ namespace Lib.Infrastructure.Services
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+            
             }
         }
     }

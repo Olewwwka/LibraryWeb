@@ -1,5 +1,6 @@
 
 using Lib.API.Contracts;
+using Lib.Application.UseCases.Users;
 using Lib.Core.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,23 +10,36 @@ namespace Lib.API.Controllers
     [Route("api/users")]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersService _usersService;
-        public UsersController(IUsersService usersService)
+        public BorrowBookUseCase _borrowBookUseCase;
+        public ReturnBookUseCase _returnBookUseCase;
+        public GetUsersBorrowedBooksUseCase _getUsersBorrowedBooksUseCase;
+        public UsersController(BorrowBookUseCase borrowBookUseCase,
+            ReturnBookUseCase returnBookUSeCase,
+            GetUsersBorrowedBooksUseCase getUsersBorrowedBooksUseCase)
         {
-            _usersService = usersService;
+            _borrowBookUseCase = borrowBookUseCase;
+            _returnBookUseCase = returnBookUSeCase;
+            _getUsersBorrowedBooksUseCase = getUsersBorrowedBooksUseCase;
         }
 
         [HttpPost("book/borrow")]
         public async Task<IResult> BorrowBook(BorrowBookRequest request, CancellationToken cancellationToken)
         {
-            var book = await _usersService.BorrowBook(request.UserId, request.BookId, request.BorrowTime, request.ReturnTime, cancellationToken);
+            var book = await _borrowBookUseCase.ExecuteAsync(request.UserId, request.BookId, request.BorrowTime, request.ReturnTime, cancellationToken);
             return Results.Ok(book);
         }
         [HttpPost("book/return/{bookId}")]
         public async Task<IResult> ReturnBook(Guid bookId, CancellationToken cancellationToken)
         {
-            var book = await _usersService.ReturnBook(bookId, cancellationToken);
+            var book = await _returnBookUseCase.ExecuteAsync(bookId, cancellationToken);
             return Results.Ok(book);
+        }
+        [HttpGet("books")]
+        public async Task<IResult> GetUserBorrowedBooks(Guid id, CancellationToken cancellationToken)
+        {
+            var books = await _getUsersBorrowedBooksUseCase.ExecuteAsync(id, cancellationToken);
+
+            return Results.Ok(books);
         }
 
     }

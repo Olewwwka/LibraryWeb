@@ -1,5 +1,5 @@
 ﻿using Lib.API.Contracts;
-using Lib.Application.Services;
+using Lib.Application.UseCases.Books;
 using Lib.Core.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,17 +9,31 @@ namespace Lib.API.Controllers
     [Route("api/books")]
     public class BooksController : ControllerBase
     {
-
-        private readonly IBooksService _booksService;
-        public BooksController(IBooksService booksService)
+        public AddBookUseCase _addBookUseCase;
+        public GetAllBooksUseCase _getAllBooksUseCase;
+        public GetBookByIdUseCase _getBookByIdUseCase;
+        public GetBookByISBNUseCase _getBookByISBNUseCase;
+        public UpdateBookInfoUseCase _updateBookInfoUseCase;
+        public DeleteBookUseCase _deleteBookUseCase;
+        public BooksController(AddBookUseCase addBookUseCase,
+            GetAllBooksUseCase getAllBooksUseCase, 
+            GetBookByIdUseCase getBookByIdUseCase, 
+            GetBookByISBNUseCase getBookByISBNUseCase, 
+            UpdateBookInfoUseCase updateBookInfoUseCase, 
+            DeleteBookUseCase deleteBookUseCase)
         {
-            _booksService = booksService;
+            _addBookUseCase = addBookUseCase;
+            _getAllBooksUseCase = getAllBooksUseCase;
+            _getBookByIdUseCase = getBookByIdUseCase;
+            _getBookByISBNUseCase = getBookByISBNUseCase;
+            _updateBookInfoUseCase = updateBookInfoUseCase;
+            _deleteBookUseCase = deleteBookUseCase;
         }
 
         [HttpGet]
         public async Task<IResult> GetBooks(CancellationToken cancellationToken)
         {
-            var books = await _booksService.GetAllBooks(cancellationToken);
+            var books = await _getAllBooksUseCase.ExecuteAsync(cancellationToken);
 
             return Results.Ok(books);
         }
@@ -27,7 +41,7 @@ namespace Lib.API.Controllers
         [HttpPost]
         public async Task<IResult> AddBook(AddBookRequest request, CancellationToken cancellationToken)
         {
-            var book = await _booksService.AddBook(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId, cancellationToken);
+            var book = await _addBookUseCase.ExecuteAsync(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId, cancellationToken);
 
             return Results.Ok(book);
         
@@ -35,7 +49,7 @@ namespace Lib.API.Controllers
         [HttpGet("{id}")]
         public async Task<IResult> GetBookById(Guid id, CancellationToken cancellationToken)
         {
-            var book = await _booksService.GetBookById(id, cancellationToken);
+            var book = await _getBookByIdUseCase.ExecuteAsync(id, cancellationToken);
 
             return Results.Ok(book);
         }
@@ -43,7 +57,7 @@ namespace Lib.API.Controllers
         [HttpGet("isbn/{isbn}")]
         public async Task<IResult> GetBookByISBN(string isbn, CancellationToken cancellationToken)
         {
-            var book = await _booksService.GetBookByISBN(isbn, cancellationToken);
+            var book = await _getBookByISBNUseCase.ExecuteAsync(isbn, cancellationToken);
 
             return Results.Ok(book);
         }
@@ -51,14 +65,14 @@ namespace Lib.API.Controllers
         [HttpPatch("{id}")]
         public async Task<IResult> UpdateBook(Guid id, UpdateBookRequest request, CancellationToken cancellationToken)
         {
-            var book = await _booksService.UpdateBookInfo(id, request.ISBN, request.Name, request.Genre, request.Description, cancellationToken);
+            var book = await _updateBookInfoUseCase.ExecuteAsync(id, request.ISBN, request.Name, request.Genre, request.Description, cancellationToken);
             return Results.Ok(book);
         }
 
         [HttpDelete("{id}")]
         public async Task<IResult> DeleteBook(Guid id, CancellationToken cancellationToken)
         {
-            var bookId = await _booksService.DeleteBook(id, cancellationToken);
+            var bookId = await _deleteBookUseCase.ExecuteAsync(id, cancellationToken);
 
             return Results.Ok(bookId);
         }

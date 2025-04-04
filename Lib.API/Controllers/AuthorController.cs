@@ -1,6 +1,7 @@
 ﻿using Lib.API.Contracts;
 using Lib.Application.UseCases.Authors;
 using Lib.Core.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lib.API.Controllers
@@ -32,6 +33,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IResult> AddAuthor(AuthorRequest request, CancellationToken cancellationToken)
         {
             var author = await _addAuthorUseCase.ExecuteAsync(request.Name, request.Surname, request.Birthday, request.Country, cancellationToken);
@@ -39,6 +41,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IResult> GetAuthors(CancellationToken cancellationToken)
         {
             var authors = await _getAllAuthorsUseCase.ExecuteAsync(cancellationToken);
@@ -47,6 +50,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IResult> GetAuthorById(Guid id, CancellationToken cancellationToken)
         {
             var author = await _getAuthorByIdUseCase.ExecuteAsync(id, cancellationToken);
@@ -55,11 +59,30 @@ namespace Lib.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IResult> DeleteAuthor(Guid id, CancellationToken cancellationToken)
         {
             await _deleteAuthorUseCase.ExecuteAsync(id, cancellationToken);
 
             return Results.Ok();
+        }
+
+        [HttpPatch]
+        [Authorize(Roles = "Admin")]
+        public async Task<IResult> UpdateAuthor(Guid id, AuthorRequest request, CancellationToken cancellationToken)
+        {
+            var guid = await _updateAuthorInfoUseCase.ExecuteAsync(id, request.Name, request.Surname, request.Country, request.Birthday, cancellationToken);
+
+            return Results.Ok(guid);
+        }
+
+        [HttpGet("{id}/books")]
+        [Authorize]
+        public async Task<IResult> GetAuthorBooks(Guid id, CancellationToken cancellationToken)
+        {
+            var books = await _getAuthorBooksUseCase.ExecuteAsync(id, cancellationToken);
+
+            return Results.Ok(books);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Lib.API.Contracts;
 using Lib.Application.UseCases.Books;
 using Lib.Core.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lib.API.Controllers
@@ -33,6 +34,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IResult> GetBooks(CancellationToken cancellationToken)
         {
             var books = await _getAllBooksUseCase.ExecuteAsync(cancellationToken);
@@ -41,6 +43,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IResult> AddBook(AddBookRequest request, CancellationToken cancellationToken)
         {
             var book = await _addBookUseCase.ExecuteAsync(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId, cancellationToken);
@@ -49,6 +52,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IResult> GetBookById(Guid id, CancellationToken cancellationToken)
         {
             var book = await _getBookByIdUseCase.ExecuteAsync(id, cancellationToken);
@@ -57,6 +61,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpGet("isbn/{isbn}")]
+        [Authorize]
         public async Task<IResult> GetBookByISBN(string isbn, CancellationToken cancellationToken)
         {
             var book = await _getBookByISBNUseCase.ExecuteAsync(isbn, cancellationToken);
@@ -65,6 +70,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IResult> UpdateBook(Guid id, UpdateBookRequest request, CancellationToken cancellationToken)
         {
             var book = await _updateBookInfoUseCase.ExecuteAsync(id, request.ISBN, request.Name, request.Genre, request.Description, cancellationToken);
@@ -73,6 +79,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IResult> DeleteBook(Guid id, CancellationToken cancellationToken)
         {
             var bookId = await _deleteBookUseCase.ExecuteAsync(id, cancellationToken);
@@ -81,6 +88,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("{id}/borrow")]
+        [Authorize]
         public async Task<IResult> BorrowBook(Guid id, Guid userId, CancellationToken cancellationToken)
         {
             var book = await _getBookByIdUseCase.ExecuteAsync(id, cancellationToken);

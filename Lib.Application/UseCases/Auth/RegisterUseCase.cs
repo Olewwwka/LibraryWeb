@@ -28,7 +28,10 @@ namespace Lib.Application.UseCases.Auth
         {
             var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email, cancellationToken);
 
-            if (existingUser != null) throw new UserAlreadyExistsException("User with current email already exists");  //========================= 
+            if (existingUser != null)
+            { 
+                throw new UserAlreadyExistsException("User with current email already exists"); 
+            }
 
             var passwordHash = _passwordHasher.Generate(password);
 
@@ -36,6 +39,7 @@ namespace Lib.Application.UseCases.Auth
             var userEntity = _mapper.Map<UserEntity>(user);
 
             await _unitOfWork.UsersRepository.AddUserAsync(userEntity, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return user;
         }

@@ -2,6 +2,8 @@
 using Lib.Core.Abstractions;
 using Lib.Application.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Lib.Core.Exceptions;
 
 namespace Lib.Application.UseCases.Auth
 {
@@ -25,18 +27,18 @@ namespace Lib.Application.UseCases.Auth
         public async Task<(User, string accessToken, string RefreshToken)> ExecuteAsync(string email, string password, CancellationToken cancellationToken)
         {
             var existingUser = await _unitOfWork.UsersRepository.GetUserByEmailAsync(email, cancellationToken);
-            if (existingUser == null) throw new Exception();  //========================= 
 
-            if (!_passwordHasher.Verify(password, existingUser.PasswordHash)) throw new Exception();
-
-            var claims = new List<Claim>
+            if (existingUser == null)
             {
-                new(ClaimTypes.NameIdentifier, existingUser.Id.ToString()),
-                new(ClaimTypes.Email, existingUser.Email),
-                new(ClaimTypes.Role, existingUser.Role)
-            };
+                throw new UserNotFoundException($"User with id {email} not found");
+            } 
 
-            var jwtToken = _tokenService.GenerateAccessToken(claims);
+            if (!_passwordHasher.Verify(password, existingUser.PasswordHash))
+            {
+                throw new InvalidCredentialsException("Invalid password");
+            }
+
+            var jwtToken = _tokenService.GenerateAccessToken(existingUser);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             await _tokenService.StoreRefreshTokenAsync(existingUser.Id, refreshToken);

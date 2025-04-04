@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Lib.Core.Abstractions;
 using Lib.Application.Models;
+using Lib.Core.Exceptions;
 
 namespace Lib.Application.UseCases.Books
 {
@@ -17,6 +18,11 @@ namespace Lib.Application.UseCases.Books
         public async Task<Book> ExecuteAsync(string isbn, CancellationToken cancellationToken)
         {
             var bookEntity = await _unitOfWork.BooksRepository.GetBookByISBNAsync(isbn, cancellationToken);
+
+            if (bookEntity == null)
+            {
+                throw new InvalidISBNException($"Book with ISBN {isbn} is not found");
+            }
 
             var book = _mapper.Map<Book>(bookEntity);
 

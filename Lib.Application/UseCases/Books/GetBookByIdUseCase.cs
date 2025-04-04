@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Lib.Core.Abstractions;
 using Lib.Application.Models;
+using Lib.Core.Exceptions;
 
 namespace Lib.Application.UseCases.Books
 {
@@ -18,6 +19,10 @@ namespace Lib.Application.UseCases.Books
         {
             var bookEntity = await _unitOfWork.BooksRepository.GetBookByIdAsync(id, cancellationToken);
 
+            if (bookEntity == null)
+            {
+                throw new NotFoundException($"Book with id {id} is not found");
+            }
             var book = _mapper.Map<Book>(bookEntity);
 
             return book;

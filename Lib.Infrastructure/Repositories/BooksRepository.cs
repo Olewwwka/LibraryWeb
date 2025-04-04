@@ -23,11 +23,20 @@ namespace Lib.Infrastructure.Repositories
         public async Task<List<BookEntity>> GetAllBooksAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            return await _context.Books.AsNoTracking().ToListAsync(cancellationToken);
+        }
 
-            return await _context.Books
-                .AsNoTracking()
-                .Where(books => books.User == null)
-                .ToListAsync(cancellationToken);
+        public async Task<(List<BookEntity> Books, int TotalCount)> GetPaginatedBooksAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.Books.AsQueryable();
+            var totalCount = await query.CountAsync();
+
+            var books = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (books, totalCount);
         }
 
         public async Task<BookEntity> GetBookByIdAsync(Guid id, CancellationToken cancellationToken)

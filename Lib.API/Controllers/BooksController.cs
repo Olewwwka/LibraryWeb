@@ -35,11 +35,18 @@ namespace Lib.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IResult> GetBooks(CancellationToken cancellationToken)
+        public async Task<IResult> GetBooks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var books = await _getAllBooksUseCase.ExecuteAsync(cancellationToken);
+            var (books, totalCount) = await _getAllBooksUseCase.ExecuteAsync(pageNumber, pageSize, cancellationToken);
 
-            return Results.Ok(books);
+            return Results.Ok(new
+            {
+                Books = books,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
 
         [HttpPost]

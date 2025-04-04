@@ -1,10 +1,11 @@
-﻿using System.Security.Claims;
+﻿using Lib.Core.Entities;
+using System.Security.Claims;
 
 namespace Lib.Core.Abstractions
 {
     public interface ITokenService
     {
-        string GenerateAccessToken(IEnumerable<Claim> claims);
+        string GenerateAccessToken(UserEntity user);
         string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
         Task StoreRefreshTokenAsync(Guid userId, string refreshToken);

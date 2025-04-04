@@ -1,4 +1,5 @@
 ﻿using Lib.Core.Abstractions;
+using Lib.Core.Entities;
 using Lib.Infrastructure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -21,8 +22,15 @@ namespace Lib.Infrastructure.Services
             _redis = redis;
         }
 
-        public string GenerateAccessToken(IEnumerable<Claim> claims)
+        public string GenerateAccessToken(UserEntity user)
         {
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Role, user.Role)
+            };
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

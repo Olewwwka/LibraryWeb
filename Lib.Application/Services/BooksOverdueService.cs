@@ -20,7 +20,9 @@ namespace Lib.Infrastructure.Services
             while (!cancellationToken.IsCancellationRequested)
             {
                 using var scope = _serviceProvider.CreateScope();
+
                 var booksRepository = scope.ServiceProvider.GetRequiredService<IBooksRepository>();
+
                 var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
                 var books = await booksRepository.GetOverdueBooksAsync(cancellationToken);

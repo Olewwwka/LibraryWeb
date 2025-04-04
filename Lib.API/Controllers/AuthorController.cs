@@ -69,7 +69,7 @@ namespace Lib.API.Controllers
 
         [HttpPatch]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> UpdateAuthor(Guid id, AuthorRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> UpdateAuthor(Guid id, UpdateAuthorRequest request, CancellationToken cancellationToken)
         {
             var guid = await _updateAuthorInfoUseCase.ExecuteAsync(id, request.Name, request.Surname, request.Country, request.Birthday, cancellationToken);
 

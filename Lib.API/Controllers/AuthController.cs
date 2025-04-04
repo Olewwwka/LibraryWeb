@@ -24,6 +24,7 @@ namespace Lib.API.Controllers
         public async Task<IResult> Register(RegisterRequest request, CancellationToken cancellationToken)
         { 
             var user = await _registerUseCase.ExecuteAsync(request.Name, request.Email, request.Password, cancellationToken);
+
             return Results.Ok(user);
         }
 
@@ -31,6 +32,7 @@ namespace Lib.API.Controllers
         public async Task<IResult> Login(LoginRequest request, CancellationToken cancellationToken)
         {
             var (user, accessToken, refreshToken) = await _loginUseCase.ExecuteAsync(request.Email, request.Password, cancellationToken);
+
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -38,6 +40,7 @@ namespace Lib.API.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddHours(3)
             };
+
             var Responce = HttpContext.Response;
             Responce.Cookies.Append("jwtToken", accessToken, cookieOptions);
             Responce.Cookies.Append("refreshToken", refreshToken, cookieOptions);

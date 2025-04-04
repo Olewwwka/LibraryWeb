@@ -15,6 +15,7 @@ namespace Lib.API.Controllers
         public UpdateAuthorInfoUseCase _updateAuthorInfoUseCase;
         public DeleteAuthorUseCase _deleteAuthorUseCase;
         public GetAuthorBooksUseCase _getAuthorBooksUseCase;
+
         public AuthorController(AddAuthorUseCase addAuthorUseCase,
             GetAuthorByIdUseCase getAuthorByIdUseCase,
             GetAllAuthorsUseCase getAllAuthorsUseCase,
@@ -33,16 +34,6 @@ namespace Lib.API.Controllers
         [HttpPost]
         public async Task<IResult> AddAuthor(AuthorRequest request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Surname))
-            {
-                throw new ValidationException("Author name and surname cannot be empty");
-            }
-
-            if (request.Birthday > DateTime.UtcNow)
-            {
-                throw new ValidationException("Birthday cannot be in the future");
-            }
-
             var author = await _addAuthorUseCase.ExecuteAsync(request.Name, request.Surname, request.Birthday, request.Country, cancellationToken);
             return Results.Ok(author);
         }
@@ -51,6 +42,7 @@ namespace Lib.API.Controllers
         public async Task<IResult> GetAuthors(CancellationToken cancellationToken)
         {
             var authors = await _getAllAuthorsUseCase.ExecuteAsync(cancellationToken);
+
             return Results.Ok(authors);
         }
 
@@ -58,29 +50,15 @@ namespace Lib.API.Controllers
         public async Task<IResult> GetAuthorById(Guid id, CancellationToken cancellationToken)
         {
             var author = await _getAuthorByIdUseCase.ExecuteAsync(id, cancellationToken);
-            if (author == null)
-            {
-                throw new NotFoundException($"Author with ID {id} not found");
-            }
+
             return Results.Ok(author);
         }
 
         [HttpDelete("{id}")]
         public async Task<IResult> DeleteAuthor(Guid id, CancellationToken cancellationToken)
         {
-            var author = await _getAuthorByIdUseCase.ExecuteAsync(id, cancellationToken);
-            if (author == null)
-            {
-                throw new NotFoundException($"Author with ID {id} not found");
-            }
-
-            var books = await _getAuthorBooksUseCase.ExecuteAsync(id, cancellationToken);
-            if (books?.Any() == true)
-            {
-                throw new ConflictException($"Cannot delete author with ID {id} because they have books");
-            }
-
             await _deleteAuthorUseCase.ExecuteAsync(id, cancellationToken);
+
             return Results.Ok();
         }
     }

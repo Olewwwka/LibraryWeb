@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Lib.API.Contracts;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Lib.API.Constants.Validation;
 
 namespace Lib.API.Validators
 {
@@ -9,25 +10,22 @@ namespace Lib.API.Validators
         public UpdateBookRequestValidator()
         {
             RuleFor(book => book.ISBN)
-                .NotEmpty()
-                    .WithMessage("ISBN is required")
-                .Length(10, 20)
-                    .WithMessage("ISBN must be 10 to 20 characters");
+                .NotEmpty().WithMessage(ErrorUpdateBookMessages.ISBNRequired)
+                .MinimumLength(ValidationConstants.ISBNMinLength).WithMessage(ErrorUpdateBookMessages.ISBNMinLength)
+                .MaximumLength(ValidationConstants.ISBNMaxLength).WithMessage(ErrorUpdateBookMessages.ISBNMaxLength);
 
             RuleFor(book => book.Name)
-                .NotEmpty()
-                    .WithMessage("Title is required")
-                .Length(2, 50)
-                    .WithMessage("Title must be 2 to 50 characters");
+                .NotEmpty().WithMessage(ErrorUpdateBookMessages.NameRequired)
+                .MinimumLength(ValidationConstants.NameMinLength).WithMessage(ErrorUpdateBookMessages.NameMinLength)
+                .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ErrorUpdateBookMessages.NameMaxLength);
 
             RuleFor(book => book.Genre)
-                .IsInEnum()
-                    .WithMessage("Invalid genre");
+                .NotEmpty().WithMessage(ErrorUpdateBookMessages.GenreRequired);
 
             RuleFor(book => book.Description)
-                .MaximumLength(1000)
-                    .WithMessage("Description must be 1000 characters or less")
-                .When(book => !string.IsNullOrEmpty(book.Description));
+                .NotEmpty().WithMessage(ErrorUpdateBookMessages.DescriptionRequired)
+                .MinimumLength(ValidationConstants.DescriptionMinLength).WithMessage(ErrorUpdateBookMessages.DescriptionMinLength)
+                .MaximumLength(ValidationConstants.DescriptionMaxLength).WithMessage(ErrorUpdateBookMessages.DescriptionMaxLength);
         }
     }
 }

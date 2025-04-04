@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Lib.API.Contracts;
+using Lib.API.Constants.Validation;
 
 namespace Lib.API.Validators
 {
@@ -8,20 +9,13 @@ namespace Lib.API.Validators
         public LoginRequestValidator()
         {
             RuleFor(user => user.Email)
-                .NotEmpty()
-                    .WithMessage("Email is required")
-                .MaximumLength(254)
-                    .WithMessage("Email must be 50 characters or less")
-                .EmailAddress()
-                    .WithMessage("Valid email required");
+                .NotEmpty().WithMessage(ErrorLoginMessages.EmailRequired)
+                .EmailAddress().WithMessage(ErrorLoginMessages.EmailInvalid);
 
             RuleFor(user => user.Password)
-                .NotEmpty()
-                    .WithMessage("Password is required")
-                .MinimumLength(6)
-                    .WithMessage("Password must be 6 characters or more")
-                .MaximumLength(64)
-                    .WithMessage("Password must be 30 characters or less");
+                .NotEmpty().WithMessage(ErrorLoginMessages.PasswordRequired)
+                .MinimumLength(ValidationConstants.PasswordMinLength).WithMessage(ErrorLoginMessages.PasswordMinLength)
+                .MaximumLength(ValidationConstants.PasswordMaxLength).WithMessage(ErrorLoginMessages.PasswordMaxLength);
         }
     }
 }

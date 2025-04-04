@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Lib.API.Contracts;
+using Lib.API.Constants.Validation;
 
 namespace Lib.API.Validators
 {
@@ -8,30 +9,18 @@ namespace Lib.API.Validators
         public RegisterRequestValidator()
         {
             RuleFor(user => user.Email)
-                .NotEmpty()
-                    .WithMessage("Name is required")
-                .MinimumLength(2)
-                    .WithMessage("Name must contain at least 5 characters")
-                .MaximumLength(20)
-                    .WithMessage("Name must contain no more than 50 characters")
-                .Matches(@"^[a-zA-Zа-яА-Я]")
-                    .WithMessage("Name can only contain letters");
-
-            RuleFor(user => user.Email)
-                .NotEmpty()
-                    .WithMessage("Email is required.")
-                .EmailAddress()
-                    .WithMessage("Incorrect email")
-                .MaximumLength(50)
-                    .WithMessage("Email must contain no more than 50 characters.");
+                .NotEmpty().WithMessage(ErrorUserMessages.EmailRequired)
+                .EmailAddress().WithMessage(ErrorUserMessages.EmailInvalid);
 
             RuleFor(user => user.Password)
-                .NotEmpty()
-                    .WithMessage("Password is required.")
-                .MinimumLength(8)
-                    .WithMessage("Password must contain at least 6 characters.")
-                .MaximumLength(30)
-                    .WithMessage("Name must contain no more than 30 characters.");
+                .NotEmpty().WithMessage(ErrorUserMessages.PasswordRequired)
+                .MinimumLength(ValidationConstants.PasswordMinLength).WithMessage(ErrorUserMessages.PasswordMinLength)
+                .MaximumLength(ValidationConstants.PasswordMaxLength).WithMessage(ErrorUserMessages.PasswordMaxLength);
+
+            RuleFor(user => user.Name)
+                .NotEmpty().WithMessage(ErrorUserMessages.NameRequired)
+                .MinimumLength(ValidationConstants.NameMinLength).WithMessage(ErrorUserMessages.NameMinLength)
+                .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ErrorUserMessages.NameMaxLength);
 
         }
     }

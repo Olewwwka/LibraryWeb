@@ -1,41 +1,42 @@
 ﻿using FluentValidation;
+using Lib.API.Constants.Validation;
 using Lib.API.Contracts;
 
 namespace Lib.API.Validators
 {
-    public class AuthorRequestValidator : AbstractValidator<AuthorRequest>
+    public class AuthorRequestValidator : AbstractValidator<UpdateAuthorRequest>
     {
         public AuthorRequestValidator()
         {
             RuleFor(author => author.Name)
                 .NotEmpty()
-                    .WithMessage("Name is required")
-                .Length(2, 50)
-                    .WithMessage("Name must be between 2 and 50 characters")
-                .Matches(@"^[a-zA-Z\s\-']+$")
-                     .WithMessage("Name contains invalid characters");
+                    .WithMessage(ErrorAuthorRequestMessages.NameRequired)
+                .Length(AuthorValidationConstants.NameMinLength, AuthorValidationConstants.NameMaxLength)
+                    .WithMessage(ErrorAuthorRequestMessages.NameLength)
+                .Matches(AuthorValidationConstants.NameRegexPattern)
+                    .WithMessage(ErrorAuthorRequestMessages.NameInvalidChars);
 
             RuleFor(author => author.Surname)
                 .NotEmpty()
-                    .WithMessage("Surname is required")
-                .Length(2, 50)
-                    .WithMessage("Surname must be between 2 and 50 characters")
-                .Matches(@"^[a-zA-Z\s\-']+$")
-                    .WithMessage("Surname contains invalid characters");
+                    .WithMessage(ErrorAuthorRequestMessages.SurnameRequired)
+                .Length(AuthorValidationConstants.SurnameMinLength, AuthorValidationConstants.SurnameMaxLength)
+                    .WithMessage(ErrorAuthorRequestMessages.SurnameLength)
+                .Matches(AuthorValidationConstants.SurnameRegexPattern)
+                    .WithMessage(ErrorAuthorRequestMessages.SurnameInvalidChars);
 
             RuleFor(author => author.Country)
                 .NotEmpty()
-                    .WithMessage("Country is required")
-                .Length(2, 60)
-                    .WithMessage("Country must be between 2 and 60 characters");
+                    .WithMessage(ErrorAuthorRequestMessages.CountryRequired)
+                .Length(AuthorValidationConstants.CountryMinLength, AuthorValidationConstants.CountryMaxLength)
+                    .WithMessage(ErrorAuthorRequestMessages.CountryLength);
 
             RuleFor(author => author.Birthday)
                 .NotEmpty()
-                    .WithMessage("Birth date is required")
+                    .WithMessage(ErrorAuthorRequestMessages.BirthdayRequired)
                 .LessThan(DateTime.Today)
-                    .WithMessage("Birth date must be in past")
-                .GreaterThan(new DateTime(1900, 1, 1))
-                    .WithMessage("Birth date must be after 1900");
+                    .WithMessage(ErrorAuthorRequestMessages.BirthdayInPast)
+                .GreaterThan(new DateTime(AuthorValidationConstants.MinBirthYear, 1, 1))
+                    .WithMessage(ErrorAuthorRequestMessages.BirthdayAfter1900);
         }
     }
 }

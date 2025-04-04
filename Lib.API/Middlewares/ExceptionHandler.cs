@@ -42,23 +42,9 @@ namespace Lib.API.Middlewares
 
             switch (exception)
             {
+                case UserNotFoundException:
                 case NotFoundException:
                     context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                    response.Message = exception.Message;
-                    break;
-
-                case ValidationException:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response.Message = exception.Message;
-                    break;
-
-                case UnauthorizedException:
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    response.Message = exception.Message;
-                    break;
-
-                case ForbiddenException:
-                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                     response.Message = exception.Message;
                     break;
 
@@ -67,8 +53,13 @@ namespace Lib.API.Middlewares
                     response.Message = exception.Message;
                     break;
 
+                case UnauthorizedAccessException:
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    response.Message = "Access denied";
+                    break;
+
                 case BookAlreadyBorrowedException:
-                case BookNotAvailableException:
+                case AuthorAlreadyExistsException:
                 case InvalidISBNException:
                 case UserAlreadyExistsException:
                 case InvalidCredentialsException:

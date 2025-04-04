@@ -34,12 +34,11 @@ namespace Lib.Infrastructure.Repositories
                 .FirstOrDefaultAsync(user => user.Email == email, cancellationToken);
             return user;
         }
+
         public async Task AddUserAsync(UserEntity user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             await _context.AddAsync(user, cancellationToken);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<BookEntity> ReturnBookAsync(Guid bookId, CancellationToken cancellationToken)
@@ -57,7 +56,6 @@ namespace Lib.Infrastructure.Repositories
             book.BorrowTime = DateTime.MinValue;
             book.ReturnTime = DateTime.MinValue;
 
-            await _context.SaveChangesAsync(cancellationToken);
             return book;
         }
 
@@ -82,8 +80,6 @@ namespace Lib.Infrastructure.Repositories
             bookEntity.UserId = userId;
             bookEntity.BorrowTime = borrowTime;
             bookEntity.ReturnTime = returnTime;
-
-            await _context.SaveChangesAsync(cancellationToken);
 
             return bookEntity;
         }

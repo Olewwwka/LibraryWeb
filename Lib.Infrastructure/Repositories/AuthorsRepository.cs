@@ -57,7 +57,6 @@ namespace Lib.Infrastructure.Repositories
                     .SetProperty(author => author.Country, country),
                     cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
             return authorId;
         }
 
@@ -68,8 +67,6 @@ namespace Lib.Infrastructure.Repositories
             await _context.Authors
                 .Where(author => author.Id == authorId)
                 .ExecuteDeleteAsync(cancellationToken);
-
-            await _context.SaveChangesAsync(cancellationToken);
 
             return authorId;
         }

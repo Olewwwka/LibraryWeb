@@ -20,5 +20,10 @@ namespace Lib.Infrastructure.Repositories
             BooksRepository = new BooksRepository(_dbContext);
             AuthorsRepository = new AuthorsRepository(_dbContext);
         }
+        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

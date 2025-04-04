@@ -53,19 +53,14 @@ namespace Lib.Infrastructure.Repositories
             cancellationToken.ThrowIfCancellationRequested();
 
             await _context.Books.AddAsync(book, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return book;
         }
 
-        public async Task<Guid> UpdateBookAsync(Guid id, 
-            string isbn, 
-            string name, 
-            Genre genre, 
-            string description, 
-            CancellationToken cancellationToken)
+        public async Task<Guid> UpdateBookAsync(Guid id, string isbn, string name, Genre genre, string description, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             await _context.Books
                 .Where(book => book.Id == id)
                 .ExecuteUpdateAsync(book => book
@@ -75,20 +70,20 @@ namespace Lib.Infrastructure.Repositories
                     .SetProperty(book => book.Description, description),
                     cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
             return id;
         }
 
         public async Task<Guid> DeleteBookAsync(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             await _context.Books
                 .Where(book => book.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
             return id;
         }
+
         public async Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

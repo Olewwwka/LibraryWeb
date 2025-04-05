@@ -18,6 +18,19 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200");
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowCredentials();
+
+    });
+});
+
+
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(c =>

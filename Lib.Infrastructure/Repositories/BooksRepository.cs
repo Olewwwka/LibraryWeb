@@ -23,18 +23,23 @@ namespace Lib.Infrastructure.Repositories
         public async Task<List<BookEntity>> GetAllBooksAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _context.Books.AsNoTracking().ToListAsync(cancellationToken);
+            return await _context.Books.AsNoTracking().Include(book => book.Author).ToListAsync(cancellationToken);
         }
 
-        public async Task<(List<BookEntity> Books, int TotalCount)> GetPaginatedBooksAsync(int pageNumber, int pageSize)
+        public async Task<(List<BookEntity> Books, int TotalCount)> GetPaginatedBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var query = _context.Books.AsQueryable();
-            var totalCount = await query.CountAsync();
+            var query = _context.Books
+                .AsQueryable()
+                .Where(book => book.UserId == null)
+                .AsSplitQuery()
+                .Include(book =>book.Author);
+
+            var totalCount = await query.CountAsync(cancellationToken);
 
             var books = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return (books, totalCount);
         }
@@ -46,6 +51,24 @@ namespace Lib.Infrastructure.Repositories
             return await _context.Books
                 .AsNoTracking()
                 .FirstOrDefaultAsync(book => book.Id == id, cancellationToken);
+        }
+
+        public async Task<(List<BookEntity> Books, int TotalCount)> GetBooksByGenreAsync(Genre genre, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _context.Books
+                .AsQueryable()
+                .Where(book => book.UserId == null && book.Genre == genre)
+                .AsSplitQuery()
+                .Include(book => book.Author);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var books = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (books, totalCount);
         }
 
         public async Task<BookEntity> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken)
@@ -62,9 +85,36 @@ namespace Lib.Infrastructure.Repositories
             cancellationToken.ThrowIfCancellationRequested();
 
             await _context.Books.AddAsync(book, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return book;
         }
+        public async Task<string> UpdateBookImageAsync(Guid id, string imagePath, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _context.Books
+                .Where(book => book.Id == id)
+               .ExecuteUpdateAsync(book => book
+                    .SetProperty(book => book.ImagePath, imagePath),
+                    cancellationToken);
+
+            return imagePath;
+        }
+
+        public async Task<string> DeleteBookImageAsync(Guid id, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _context.Books
+                .Where(book => book.Id == id)
+               .ExecuteUpdateAsync(book => book
+                    .SetProperty(book => book.ImagePath, "default_image.jpg"),
+                    cancellationToken);
+
+            return "default_image.jpg";
+        }
+
 
         public async Task<Guid> UpdateBookAsync(Guid id, string isbn, string name, Genre genre, string description, CancellationToken cancellationToken)
         {
@@ -102,6 +152,24 @@ namespace Lib.Infrastructure.Repositories
                 .Include(book => book.User)
                 .ToListAsync(cancellationToken);
             return books;
+        }
+
+        public async Task<(List<BookEntity> Books, int TotalCount)> GetBooksByGenreAndAuthorAsync(Genre genre, Guid authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _context.Books
+                .AsQueryable()
+                .Where(book => book.UserId == null && book.Genre == genre && book.AuthorId == authorId)
+                .AsSplitQuery()
+                .Include(book => book.Author);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var books = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (books, totalCount);
         }
     }
 }

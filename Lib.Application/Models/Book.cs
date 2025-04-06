@@ -10,7 +10,9 @@ namespace Lib.Application.Models
         public Genre Genre { get; set; }
         public string Description { get; set; } = string.Empty;
         public Guid AuthorId { get; set; } 
+        public Author Author { get; set; }
         public Guid? UserId { get; set; }
+        public string ImagePath { get; set; } = "default_image.jpg";
         public DateTime? BorrowTime { get; set; }
         public DateTime? ReturnTime { get; set; }
         public bool IsBorrowed => UserId.HasValue;
@@ -23,6 +25,7 @@ namespace Lib.Application.Models
             Genre = genre;
             Description = description;
             AuthorId = authorId;
+            ImagePath = "default_image.jpg";
         }
     }
 }

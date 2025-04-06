@@ -12,6 +12,18 @@ namespace Lib.Infrastructure.Configurations
 
             bookBuilder.Property(book => book.Id).ValueGeneratedOnAdd();
 
+            bookBuilder.Property(book => book.BorrowTime)
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            bookBuilder.Property(book => book.ReturnTime)
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
             bookBuilder.HasOne(book => book.Author)
                 .WithMany(author => author.Books)
                 .HasForeignKey(book => book.AuthorId)

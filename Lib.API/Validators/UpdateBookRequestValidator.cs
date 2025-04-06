@@ -19,12 +19,8 @@ namespace Lib.API.Validators
                 .MinimumLength(ValidationConstants.NameMinLength).WithMessage(ErrorUpdateBookMessages.NameMinLength)
                 .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ErrorUpdateBookMessages.NameMaxLength);
 
-            RuleFor(book => book.Genre)
-                .NotEmpty().WithMessage(ErrorUpdateBookMessages.GenreRequired);
-
             RuleFor(book => book.Description)
                 .NotEmpty().WithMessage(ErrorUpdateBookMessages.DescriptionRequired)
-                .MinimumLength(ValidationConstants.DescriptionMinLength).WithMessage(ErrorUpdateBookMessages.DescriptionMinLength)
                 .MaximumLength(ValidationConstants.DescriptionMaxLength).WithMessage(ErrorUpdateBookMessages.DescriptionMaxLength);
         }
     }

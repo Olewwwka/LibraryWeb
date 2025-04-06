@@ -29,6 +29,7 @@ namespace Lib.Application.UseCases.Authors
             var authorEntity = _mapper.Map<AuthorEntity>(author);
 
             await _unitOfWork.AuthorsRepository.AddAuthorAsync(authorEntity, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return author;
         }

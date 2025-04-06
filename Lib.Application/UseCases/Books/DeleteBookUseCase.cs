@@ -22,6 +22,7 @@ namespace Lib.Application.UseCases.Books
             }
 
             var guid = await _unitOfWork.BooksRepository.DeleteBookAsync(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return guid;
         }
     }

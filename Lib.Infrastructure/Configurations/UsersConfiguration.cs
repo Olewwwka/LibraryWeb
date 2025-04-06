@@ -11,6 +11,7 @@ namespace Lib.Infrastructure.Configurations
             userBuilder.ToTable("Users").HasKey(user => user.Id);
 
             userBuilder.Property(user => user.Id).ValueGeneratedOnAdd();
+
         }
     }
 }

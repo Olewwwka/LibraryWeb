@@ -13,6 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using Microsoft.Extensions.FileProviders;
+using Lib.Application;
+using Library.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -22,11 +25,10 @@ services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200");
-        policy.AllowAnyHeader();
-        policy.AllowAnyMethod();
-        policy.AllowCredentials();
-
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -43,7 +45,8 @@ services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
 services.AddDbContext<LibraryDbContext>(options =>
 {
-    options.UseNpgsql(configuration.GetConnectionString(nameof(LibraryDbContext)));
+    options.UseNpgsql(configuration.GetConnectionString(nameof(LibraryDbContext)),
+        npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
 });
 
 services.AddApiAutorization(configuration,
@@ -70,7 +73,16 @@ services.AddUseCases();
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+services.AddScoped<IFileService, FileService>();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var service = scope.ServiceProvider;
+    var context = service.GetRequiredService<LibraryDbContext>();
+    InitDatabase.Initialize(context);
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -79,9 +91,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/uploads"
+});
+
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 app.UseMiddleware<ExceptionHandler>();

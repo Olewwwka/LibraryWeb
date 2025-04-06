@@ -22,6 +22,7 @@ namespace Lib.Application.UseCases.Authors
             } 
 
             var authorId = await _unitOfWork.AuthorsRepository.DeleteAuthorAsync(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return authorId;
         }

@@ -18,6 +18,9 @@ namespace Lib.Application.UseCases.Users
         public async Task<Book> ExecuteAsync(Guid userId, Guid bookId, DateTime borrowTime, DateTime returnTime, CancellationToken cancellationToken)
         {
             var bookEntity = await _unitOfWork.UsersRepository.BorrowBookAsync(userId, bookId, borrowTime, returnTime, cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             var book = _mapper.Map<Book>(bookEntity);
 
             return book;

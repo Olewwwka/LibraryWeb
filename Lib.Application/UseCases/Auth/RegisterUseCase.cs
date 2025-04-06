@@ -35,7 +35,7 @@ namespace Lib.Application.UseCases.Auth
 
             var passwordHash = _passwordHasher.Generate(password);
 
-            var user = new User(name, email, passwordHash);
+            var user = new User(Guid.NewGuid(), name, email, passwordHash, "Admin");
             var userEntity = _mapper.Map<UserEntity>(user);
 
             await _unitOfWork.UsersRepository.AddUserAsync(userEntity, cancellationToken);

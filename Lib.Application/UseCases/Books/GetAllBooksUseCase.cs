@@ -20,7 +20,7 @@ namespace Lib.Application.UseCases.Books
 
         public async Task<(List<Book> Books, int TotalCount)> ExecuteAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var (bookEntities, totalCount) = await _unitOfWork.BooksRepository.GetPaginatedBooksAsync(pageNumber, pageSize);
+            var (bookEntities, totalCount) = await _unitOfWork.BooksRepository.GetPaginatedBooksAsync(pageNumber, pageSize, cancellationToken);
             
             var books = _mapper.Map<List<Book>>( bookEntities);
 

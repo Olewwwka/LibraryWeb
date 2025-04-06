@@ -20,6 +20,6 @@ namespace Lib.Core.Abstractions
             string country,
             CancellationToken cancellationToken);
         Task<Guid> DeleteAuthorAsync(Guid authorId, CancellationToken cancellationToken);
-        Task<List<BookEntity>> GetBooksByAuthorAsync(Guid authorId, CancellationToken cancellationToken);
+        Task<(List<BookEntity> Books, int TotalCount)> GetBooksByAuthorAsync(Guid authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);
     }
 }

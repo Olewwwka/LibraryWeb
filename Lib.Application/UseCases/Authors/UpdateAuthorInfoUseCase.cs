@@ -24,6 +24,7 @@ namespace Lib.Application.UseCases.Authors
             }
 
             var authorId = await _unitOfWork.AuthorsRepository.UpdateAuthorAsync(id, name, surname, birthday, country, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return authorId;
         }

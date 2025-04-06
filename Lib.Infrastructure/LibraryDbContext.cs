@@ -1,5 +1,6 @@
 ﻿using Lib.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Lib.Infrastructure
 {
@@ -11,6 +12,20 @@ namespace Lib.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly);
+        }
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<DateTime>()
+                .HaveConversion<DateTimeToUtcConverter>();
+        }
+
+        public class DateTimeToUtcConverter : ValueConverter<DateTime, DateTime>
+        {
+            public DateTimeToUtcConverter() : base(
+                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            {
+            }
         }
     }
 }

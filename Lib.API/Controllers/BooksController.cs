@@ -1,8 +1,11 @@
 ﻿using Lib.API.Contracts;
 using Lib.Application.UseCases.Books;
+using Lib.Core.Enums;
 using Lib.Core.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Lib.Core.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace Lib.API.Controllers
 {
@@ -16,6 +19,10 @@ namespace Lib.API.Controllers
         public GetBookByISBNUseCase _getBookByISBNUseCase;
         public UpdateBookInfoUseCase _updateBookInfoUseCase;
         public DeleteBookUseCase _deleteBookUseCase;
+        public GetBooksByGenreUseCase _getBooksByGenreUseCase;
+        public GetBooksByGenreAndAuthorUseCase _getBooksByGenreAndAuthorUseCase;
+        public UploadBookImageUseCase _uploadBookImageUseCase;
+        public DeleteBookImageUseCase _deleteBookImageUseCase;
 
         public BooksController(
             AddBookUseCase addBookUseCase,
@@ -23,7 +30,12 @@ namespace Lib.API.Controllers
             GetBookByIdUseCase getBookByIdUseCase, 
             GetBookByISBNUseCase getBookByISBNUseCase, 
             UpdateBookInfoUseCase updateBookInfoUseCase, 
-            DeleteBookUseCase deleteBookUseCase)
+            DeleteBookUseCase deleteBookUseCase,
+            GetBooksByGenreUseCase getBooksByGenreUseCase,
+            GetBooksByGenreAndAuthorUseCase getBooksByGenreAndAuthorUseCase,
+            UploadBookImageUseCase uploadBookImageUseCase,
+            DeleteBookImageUseCase deleteBookImageUseCase
+            )
         {
             _addBookUseCase = addBookUseCase;
             _getAllBooksUseCase = getAllBooksUseCase;
@@ -31,6 +43,10 @@ namespace Lib.API.Controllers
             _getBookByISBNUseCase = getBookByISBNUseCase;
             _updateBookInfoUseCase = updateBookInfoUseCase;
             _deleteBookUseCase = deleteBookUseCase;
+            _getBooksByGenreUseCase = getBooksByGenreUseCase;
+            _getBooksByGenreAndAuthorUseCase = getBooksByGenreAndAuthorUseCase;
+            _uploadBookImageUseCase = uploadBookImageUseCase;
+            _deleteBookImageUseCase = deleteBookImageUseCase;
         }
 
         [HttpGet]
@@ -38,6 +54,38 @@ namespace Lib.API.Controllers
         public async Task<IResult> GetBooks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
             var (books, totalCount) = await _getAllBooksUseCase.ExecuteAsync(pageNumber, pageSize, cancellationToken);
+
+            return Results.Ok(new
+            {
+                Books = books,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
+        }
+
+        [HttpGet("genre/{genre}")]
+        [Authorize]
+        public async Task<IResult> GetBooksByGenre(Genre genre, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var (books, totalCount) = await _getBooksByGenreUseCase.ExecuteAsync(genre, pageNumber, pageSize, cancellationToken);
+
+            return Results.Ok(new
+            {
+                Books = books,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
+        }
+
+        [HttpGet("genre/{genre}/author/{authorId}")]
+        [Authorize]
+        public async Task<IResult> GetBooksByGenreAndAuthor(Genre genre, Guid authorId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var (books, totalCount) = await _getBooksByGenreAndAuthorUseCase.ExecuteAsync(genre, authorId, pageNumber, pageSize, cancellationToken);
 
             return Results.Ok(new
             {
@@ -94,13 +142,20 @@ namespace Lib.API.Controllers
             return Results.Ok(bookId);
         }
 
-        [HttpPost("{id}/borrow")]
-        [Authorize]
-        public async Task<IResult> BorrowBook(Guid id, Guid userId, CancellationToken cancellationToken)
+        [HttpPost("{id}/image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IResult> UploadBookImage(Guid id, IFormFile imageFile, CancellationToken cancellationToken)
         {
-            var book = await _getBookByIdUseCase.ExecuteAsync(id, cancellationToken);
+            var imagePath = await _uploadBookImageUseCase.ExecuteAsync(id, imageFile, cancellationToken);
+            return Results.Ok(new { imagePath });
+        }
 
-            return Results.Ok();
+        [HttpDelete("{id}/image")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IResult> DeleteBookImage(Guid id, string filePath, CancellationToken cancellationToken)
+        {
+            var path = await _deleteBookImageUseCase.ExecuteAsync(id, filePath, cancellationToken);
+            return Results.Ok(path);
         }
     }
 }

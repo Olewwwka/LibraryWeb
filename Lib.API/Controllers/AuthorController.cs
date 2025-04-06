@@ -1,4 +1,4 @@
-﻿using Lib.API.Contracts;
+﻿    using Lib.API.Contracts;
 using Lib.Application.UseCases.Authors;
 using Lib.Core.Exceptions;
 using Microsoft.AspNetCore.Authorization;
@@ -67,7 +67,7 @@ namespace Lib.API.Controllers
             return Results.Ok();
         }
 
-        [HttpPatch]
+        [HttpPatch("up/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IResult> UpdateAuthor(Guid id, UpdateAuthorRequest request, CancellationToken cancellationToken)
         {
@@ -78,11 +78,18 @@ namespace Lib.API.Controllers
 
         [HttpGet("{id}/books")]
         [Authorize]
-        public async Task<IResult> GetAuthorBooks(Guid id, CancellationToken cancellationToken)
+        public async Task<IResult> GetAuthorBooks(Guid id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var books = await _getAuthorBooksUseCase.ExecuteAsync(id, cancellationToken);
+            var (books, totalCount) = await _getAuthorBooksUseCase.ExecuteAsync(id, pageNumber, pageSize, cancellationToken);
 
-            return Results.Ok(books);
+            return Results.Ok(new
+            {
+                Books = books,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
     }
 }

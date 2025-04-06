@@ -2,9 +2,22 @@
 {
     public enum Genre
     {
-        Horror,
+        Fiction = 0,
+        NonFiction,
+        Mystery,
+        ScienceFiction,
         Fantasy,
-        Triller,
-        Romance
+        Romance,
+        Thriller,
+        Horror,
+        Biography,
+        History,
+        Poetry,
+        Drama,
+        Comedy,
+        Adventure,
+        Children,
+        Educational,
+        Other
     }
 }

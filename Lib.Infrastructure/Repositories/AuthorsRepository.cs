@@ -16,7 +16,7 @@ namespace Lib.Infrastructure.Repositories
         public async Task<List<AuthorEntity>> GetAllAuthorsAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _context.Authors.ToListAsync(cancellationToken);
+            return await _context.Authors.Include(author => author.Books).ToListAsync(cancellationToken);
         }
 
         public async Task<AuthorEntity> GetAuthrorByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -24,6 +24,7 @@ namespace Lib.Infrastructure.Repositories
             cancellationToken.ThrowIfCancellationRequested();
 
             return await _context.Authors
+                .Include(author => author.Books)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(author => author.Id == id, cancellationToken);
         }
@@ -71,14 +72,23 @@ namespace Lib.Infrastructure.Repositories
             return authorId;
         }
 
-        public async Task<List<BookEntity>> GetBooksByAuthorAsync(Guid authorId, CancellationToken cancellationToken)
+        public async Task<(List<BookEntity> Books, int TotalCount)> GetBooksByAuthorAsync(Guid authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _context.Books
+            var query = _context.Books
                 .AsNoTracking()
-                .Where(book => book.AuthorId == authorId)
+                .Include(book => book.Author)
+                .Where(book => book.AuthorId == authorId);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var books = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(cancellationToken);
+
+            return (books, totalCount);
         }
     }
 }

@@ -9,8 +9,7 @@ namespace Lib.Application.Mappers
         public AuthorProfile()
         {
             CreateMap<Author, AuthorEntity>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore()) 
-                .ForMember(dest => dest.Books, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
             CreateMap<AuthorEntity, Author>()
                 .ForMember(dest => dest.Books, opt => opt.Ignore());

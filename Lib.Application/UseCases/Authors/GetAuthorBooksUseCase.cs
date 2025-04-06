@@ -15,7 +15,7 @@ namespace Lib.Application.UseCases.Authors
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Book>> ExecuteAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<(List<Book> Books, int TotalCount)> ExecuteAsync(Guid id, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var author = await _unitOfWork.AuthorsRepository.GetAuthrorByIdAsync(id, cancellationToken);
 
@@ -24,10 +24,10 @@ namespace Lib.Application.UseCases.Authors
                 throw new NotFoundException($"Author with id {id} not found");
             }
 
-            var bookEntities = await _unitOfWork.AuthorsRepository.GetBooksByAuthorAsync(id, cancellationToken);
+            var (bookEntities, totalCount) = await _unitOfWork.AuthorsRepository.GetBooksByAuthorAsync(id, pageNumber, pageSize, cancellationToken);
             var books = _mapper.Map<List<Book>>(bookEntities);
 
-            return books;
+            return (books, totalCount);
         }
     }
 }

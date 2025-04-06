@@ -1,0 +1,27 @@
+<div class="profile-container">
+  <h1>Profile</h1>
+  
+  <div *ngIf="borrowedBooks.length === 0" class="no-books">
+    <p>You don't have borrowed books</p>
+  </div>
+
+  <div *ngIf="borrowedBooks.length > 0" class="borrowed-books">
+    <mat-card *ngFor="let book of borrowedBooks" class="book-card">
+      <mat-card-header>
+        <mat-card-title>{{ book.name }}</mat-card-title>
+        <mat-card-subtitle>ISBN: {{ book.isbn }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Genre: {{ book.genre }}</p>
+        <p>Descrition: {{ book.description }}</p>
+        <p>Date of return: {{ book.returnTime | date }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="returnBook(book)">
+          <mat-icon>keyboard_return</mat-icon>
+          Return Book
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div> 

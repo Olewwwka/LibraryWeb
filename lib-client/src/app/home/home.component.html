@@ -1,0 +1,90 @@
+<div class="home-container">
+  <div class="header">
+    <div class="title-section">
+      <h1>Library</h1>
+      
+      <mat-form-field class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Enter book title">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Genre</mat-label>
+        <mat-select [(ngModel)]="selectedGenre" (selectionChange)="onGenreChange()">
+          <mat-option [value]="null">All genres</mat-option>
+          <mat-option *ngFor="let genre of genres" [value]="genre">
+            {{ Genre[genre] }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Author</mat-label>
+        <mat-select [(ngModel)]="selectedAuthor" (selectionChange)="onAuthorChange()">
+          <mat-option [value]="null">All authors</mat-option>
+          <mat-option *ngFor="let author of authors" [value]="author.id">
+            {{ author.name }} {{ author.surname }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <button mat-raised-button color="primary" (click)="openBookDialog()" *ngIf="isAdmin">
+      <mat-icon>add</mat-icon>
+      Add book
+    </button>
+  </div>
+
+  <div class="books-grid">
+    <mat-card class="book-card" *ngFor="let book of books">
+      <mat-card-header>
+        <mat-card-title>{{ book.name }}</mat-card-title>
+        <mat-card-subtitle>ISBN: {{ book.isbn }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <div class="book-image-container">
+        <app-book-image 
+          [imagePath]="book.imagePath"
+          [altText]="book.name"
+          className="book-cover"
+        />
+      </div>
+
+      <mat-card-content>
+        <p><strong>Genre:</strong> {{ Genre[book.genre] }}</p>
+        <p><strong>Author:</strong> {{ getAuthorName(book.authorId) }}</p>
+        <p><strong>Description:</strong> {{ book.description }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="borrowBook(book)" *ngIf="!book.isBorrowed && !isAdmin">
+          <mat-icon>add</mat-icon>
+          Borrow book
+        </button>
+        <button mat-button color="primary" (click)="openBookDialog(book)" *ngIf="isAdmin">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <app-book-image-upload 
+          [bookId]="book.id"
+          [imagePath]="book.imagePath"
+          (imageUploaded)="loadBooks()"
+          *ngIf="isAdmin"
+        />
+        <button mat-button color="warn" (click)="deleteBook(book.id)" *ngIf="isAdmin">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div class="no-books" *ngIf="books.length === 0">
+    <p>No books found</p>
+  </div>
+
+  <mat-paginator
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [pageIndex]="currentPage - 1"
+    (page)="onPageChange($event.pageIndex + 1, $event.pageSize)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

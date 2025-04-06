@@ -1,0 +1,20 @@
+<nav class="header-nav" *ngIf="isAuthenticated()">
+  <div class="nav-buttons">
+    <button mat-button (click)="navigateToHome()">
+      <mat-icon>library_books</mat-icon>
+      Library
+    </button>
+    <button mat-button (click)="navigateToAuthors()">
+      <mat-icon>persons</mat-icon>
+      Authors
+    </button>
+    <button mat-button (click)="navigateToProfile()">
+      <mat-icon>person</mat-icon>
+      Your books
+    </button>
+    <button mat-button (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </div>
+</nav>

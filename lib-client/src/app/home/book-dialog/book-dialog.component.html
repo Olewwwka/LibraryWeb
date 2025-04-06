@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>{{ data ? 'Edit Book' : 'Add Book' }}</h2>
+<div mat-dialog-content>
+  <form [formGroup]="bookForm">
+    <mat-form-field>
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="name" placeholder="Enter book title">
+      <mat-error *ngIf="bookForm.get('name')?.hasError('required')">
+        Title is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>ISBN</mat-label>
+      <input matInput formControlName="isbn" placeholder="Enter ISBN">
+      <mat-error *ngIf="bookForm.get('isbn')?.hasError('required')">
+        ISBN is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Genre</mat-label>
+      <mat-select formControlName="genre">
+        <mat-option *ngFor="let genre of genres" [value]="genre">
+          {{ Genre[genre] }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="bookForm.get('genre')?.hasError('required')">
+        Genre is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Author</mat-label>
+      <mat-select formControlName="authorId">
+        <mat-option *ngFor="let author of authors" [value]="author.id">
+          {{ author.name }} {{ author.surname }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="bookForm.get('authorId')?.hasError('required')">
+        Author is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Enter book description"></textarea>
+    </mat-form-field>
+
+    <div class="image-upload" *ngIf="!data">
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" #fileInput style="display: none">
+      <button mat-button type="button" (click)="fileInput.click()">
+        <mat-icon>add_photo_alternate</mat-icon>
+        Choose image
+      </button>
+      <div *ngIf="selectedImage" class="image-preview">
+        <img [src]="selectedImage" alt="Preview">
+      </div>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!bookForm.valid">
+    {{ data ? 'Save' : 'Add' }}
+  </button>
+</div> 

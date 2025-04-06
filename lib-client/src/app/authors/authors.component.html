@@ -1,0 +1,35 @@
+<div class="authors-container">
+  <div class="header">
+    <h1>Authors</h1>
+    <button *ngIf="isAdmin" mat-raised-button color="primary" class="add-button" (click)="openAuthorDialog()">
+      <mat-icon>add</mat-icon>
+      Add author
+    </button>
+  </div>
+
+  <div class="authors-grid" *ngIf="authors.length > 0; else noAuthors">
+    <mat-card *ngFor="let author of authors" class="author-card">
+      <mat-card-header>
+        <mat-card-title>{{ author.name }} {{ author.surname }}</mat-card-title>
+        <mat-card-subtitle>{{ author.country }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Date of birth: {{ author.birthday | date:'dd.MM.yyyy' }}</p>
+      </mat-card-content>
+      <mat-card-actions *ngIf="isAdmin" align="end">
+        <button mat-icon-button color="primary" (click)="openAuthorDialog(author)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteAuthor(author)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <ng-template #noAuthors>
+    <div class="no-authors">
+      <p>Authors not found</p>
+    </div>
+  </ng-template>
+</div> 

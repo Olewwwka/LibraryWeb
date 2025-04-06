@@ -1,0 +1,33 @@
+<div class="auth-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Регистрация</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)='onRegister()'>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Имя</mat-label>
+          <input matInput [(ngModel)]="credentials.name" name="name" type="text" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="credentials.email" name="email" type="email" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Пароль</mat-label>
+          <input matInput [(ngModel)]="credentials.password" name="password" type="password" required>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width">
+          Зарегистрироваться
+        </button>
+      </form>
+      <button mat-raised-button color="accent" (click)="loginRedirect()" class="full-width">
+        Войти
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

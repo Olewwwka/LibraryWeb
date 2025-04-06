@@ -24,6 +24,38 @@ services:
     restart: unless-stopped
     command: redis-server --save 60 1 --loglevel warning
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__LibraryDbContext=Host=postgres;Port=5432;Database=LibraryWeb;Username=admin;Password=1111
+      - ConnectionStrings__Redis=redis:6379
+      - JwtOptions__SecretKey=SuperPuperSecretAmazinkKey123321
+      - JwtOptions__Issuer=library-api
+      - JwtOptions__Audience=library-client
+      - JwtOptions__AccessTokenExpiryMinutes=60
+      - JwtOptions__RefreshTokenExpiryDays=7
+    volumes:
+      - ./Lib.API/Uploads:/app/Uploads
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
   redis_data:
+  uploads:

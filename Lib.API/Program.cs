@@ -16,6 +16,7 @@ using StackExchange.Redis;
 using Microsoft.Extensions.FileProviders;
 using Lib.Application;
 using Library.Infrastructure.Data;
+using Lib.Application.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -25,10 +26,14 @@ services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "http://localhost:80",
+            "http://localhost:5000"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
@@ -71,11 +76,27 @@ services.AddHostedService<BooksOverdueService>();
 
 services.AddUseCases();
 
-services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+services.AddAutoMapper(typeof(UserProfile).Assembly);
 
 services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
+
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+var defaultImagePath = Path.Combine(uploadsPath, "default_image.jpg");
+if (!File.Exists(defaultImagePath))
+{
+    var sourceImagePath = Path.Combine(builder.Environment.ContentRootPath, "Uploads", "default_image.jpg");
+    if (File.Exists(sourceImagePath))
+    {
+        File.Copy(sourceImagePath, defaultImagePath);
+    }
+}
 
 using (var scope = app.Services.CreateScope())
 {
@@ -84,27 +105,22 @@ using (var scope = app.Services.CreateScope())
     InitDatabase.Initialize(context);
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
-    RequestPath = "/uploads"
+    RequestPath = "/api/uploads"
 });
 
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 app.UseMiddleware<ExceptionHandler>();
 
+app.MapControllers();
 
 app.Run();

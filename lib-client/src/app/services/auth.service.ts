@@ -4,13 +4,14 @@ import {HttpClient} from '@angular/common/http';
 import {UserModel} from '../Models/UserModel';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl:string = 'http://localhost:5202/api/auth';
-  private apiUrl1:string = 'http://localhost:5202/api/users/refresh-token';
+  private apiUrl:string = `${environment.apiUrl}/auth`;
+  private apiUrl1:string = `${environment.apiUrl}/users/refresh-token`;
   private userKey: string = 'user';
   private roleKey: string = 'role';
 

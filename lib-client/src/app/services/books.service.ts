@@ -8,6 +8,7 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { Genre } from '../Models/Genre';
 import { BookModel } from '../Models/BookModel';
+import { environment } from '../../environments/environment';
 
 interface BookResponse {
   books: BookModel[];
@@ -21,8 +22,8 @@ interface BookResponse {
   providedIn: 'root'
 })
 export class BooksService {
-  private apiUrl:string = 'http://localhost:5202/api/books';
-  private usersApiUrl:string = 'http://localhost:5202/api/users';
+  private apiUrl:string = `${environment.apiUrl}/books`;
+  private usersApiUrl:string = `${environment.apiUrl}/users`;
 
   constructor(
     private http: HttpClient

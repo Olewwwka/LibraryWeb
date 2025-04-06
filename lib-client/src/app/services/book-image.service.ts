@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 interface UploadImageResponse {
   imagePath: string;
@@ -11,7 +12,7 @@ interface UploadImageResponse {
   providedIn: 'root'
 })
 export class BookImageService {
-  private readonly API_URL = 'http://localhost:5202/api/books';
+  private readonly API_URL = `${environment.apiUrl}/books`;
 
   constructor(private http: HttpClient) {}
 

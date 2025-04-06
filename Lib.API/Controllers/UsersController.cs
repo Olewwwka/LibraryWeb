@@ -69,7 +69,7 @@ namespace Lib.API.Controllers
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,
+                    Secure = false,
                     SameSite = SameSiteMode.Strict,
                     Expires = DateTime.UtcNow.AddHours(3)
                 };

@@ -14,6 +14,7 @@ import { AuthorModel } from '../../Models/AuthorModel';
 import { MatSelectChange } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BooksService } from '../../services/books.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-book-dialog',
@@ -37,7 +38,7 @@ export class BookDialogComponent implements OnInit {
   Genre = Genre;
   authors: AuthorModel[] = [];
   bookForm: FormGroup;
-  selectedImage: string | null = null;
+  selectedImage: string;
   selectedFile: File | null = null;
 
   constructor(
@@ -57,9 +58,9 @@ export class BookDialogComponent implements OnInit {
     });
 
     if (data?.imagePath) {
-      this.selectedImage = `http://localhost:5202/uploads/${data.imagePath}`;
+      this.selectedImage = `${environment.apiUrl}/uploads/${data.imagePath}`;
     } else {
-      this.selectedImage = 'http://localhost:5202/uploads/default_image.jpg';
+      this.selectedImage = `${environment.apiUrl}/uploads/default_image.jpg`;
     }
   }
 

@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { AuthorModel } from '../Models/AuthorModel';
 import { UpdateAuthorModel } from '../Models/UpdateAuthorModel';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorsService {
-  private apiUrl = 'http://localhost:5202/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

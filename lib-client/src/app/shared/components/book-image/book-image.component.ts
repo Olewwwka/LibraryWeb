@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-book-image',
@@ -43,13 +44,17 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class BookImageComponent {
+export class BookImageComponent implements OnInit {
   @Input() imagePath: string | null = null;
   @Input() altText: string = '';
   @Input() className: string = '';
 
   error: boolean = false;
-  private readonly API_URL = 'http://localhost:5202';
+  private readonly API_URL = environment.apiUrl;
+
+  ngOnInit(): void {
+    // Additional initialization logic if needed
+  }
 
   getImageUrl(): string {
     if (!this.imagePath) {

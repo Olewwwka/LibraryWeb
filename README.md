@@ -1,20 +1,21 @@
-Инструкция для запуска
+### Предварительные требования
+- Docker
+- Docker Compose
 
-Запуск контейнеров
-    git clone https://github.com/Olewwwka/LibraryWeb
-В папке репозитория открываем терминал
-Запустите сборку с помощью Docker Compose:
-    docker-compose up --build
-    
-Swagger
-    http://localhost:5000/swagger/index.html
-Frontend
-    http://localhost:4200
-    
-DefaultUsers:
+### Установка и запуск
+```bash
+git clone https://github.com/Olewwwka/LibraryWeb
+cd LibraryWeb
+docker-compose up --build
+```
 
-Email: admin@library.com
-Пароль: Admin123!
-Пользователь:
-Email: user@library.com
-Пароль: User123!
+После запуска приложение будет доступно:
+- **API**: http://localhost:5000
+- **Frontend**: http://localhost:4200
+- **Swagger UI**: http://localhost:5000/swagger/index.html
+
+## 🔐 Тестовые пользователи
+| Роль       | Email              | Пароль    |
+|------------|--------------------|-----------|
+| Администратор | admin@library.com | Admin123! |
+| Пользователь   | user@library.com  | User123!  |

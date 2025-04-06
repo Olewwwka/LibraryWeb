@@ -1,7 +1,7 @@
 Инструкция для запуска
 
 Запуск контейнеров
-    git clone https://github.com/correntis/Modsen.git
+    git clone https://github.com/Olewwwka/LibraryWeb
 В папке репозитория открываем терминал
 Запустите сборку с помощью Docker Compose:
     docker-compose up --build

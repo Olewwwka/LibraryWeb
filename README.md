@@ -11,7 +11,7 @@ docker-compose up --build
 
 После запуска приложение будет доступно:
 - **API**: http://localhost:5000
-- **Frontend**: http://localhost:4200
+- **Frontend**: http://localhost:4200/login
 - **Swagger UI**: http://localhost:5000/swagger/index.html
 
 ## 🔐 Тестовые пользователи

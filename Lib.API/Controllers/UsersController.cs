@@ -58,8 +58,6 @@ namespace Lib.API.Controllers
         [HttpPost("refresh-token")]
         public async Task<IResult> RefreshToken(CancellationToken cancellationToken)
         {
-            try
-            {
                 var refreshToken = Request.Cookies["refreshToken"];
                 var accessToken = Request.Cookies["jwtToken"];
 
@@ -82,10 +80,6 @@ namespace Lib.API.Controllers
                     AccessToken = newAccessToken,
                     User = user
                 });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Results.Unauthorized();
             }
         }
     }

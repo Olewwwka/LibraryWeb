@@ -1,275 +1,268 @@
 using Lib.Core.Entities;
 using Lib.Core.Enums;
-using Lib.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
-namespace Library.Infrastructure.Data;
+namespace Library.Infrastructure;
 
 public static class InitDatabase
 {
-    public static void Initialize(LibraryDbContext context)
+    public static void Initialize(ModelBuilder modelBuilder)
     {
-        context.Database.EnsureCreated();
 
-        if (context.Users.Any())
+        var users = new List<UserEntity>
         {
-            return;
-        }
-
-        var admin = new UserEntity
-        {
-            Id = Guid.NewGuid(),
-            Name = "Admin",
-            Email = "admin@library.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
-            Role = "Admin"
+            new UserEntity
+            {
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                Name = "Admin",
+                Email = "admin@library.com",
+                PasswordHash = "$2a$11$t9PVfLca4D1.dArfDxgAhOP/8sgjOpkPbdqO/nCvNiovdP8dOu3wG",
+                Role = "Admin"
+            },
+            new UserEntity
+            {
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d471"),
+                Name = "User",
+                Email = "user@library.com",
+                PasswordHash = "$2a$11$/Hm.Ef6QWWSH.spPmrv8wOF84pOcIULA8srvm8jSGvXjoizkmd7tu",
+                Role = "User"
+            }
         };
-
-        var user = new UserEntity
-        {
-            Id = Guid.NewGuid(),
-            Name = "User",
-            Email = "user@library.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("User123!"),
-            Role = "User"
-        };
-
-        context.Users.AddRange(admin, user);
 
         var authors = new List<AuthorEntity>
         {
             new AuthorEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Лев",
-                Surname = "Толстой",
-                Country = "Россия",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d472"),
+                Name = "Р›РµРІ",
+                Surname = "РўРѕР»СЃС‚РѕР№",
+                Country = "Р РѕСЃСЃРёСЏ",
                 Birthday = new DateTime(1828, 9, 9)
             },
             new AuthorEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Фёдор",
-                Surname = "Достоевский",
-                Country = "Россия",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d473"),
+                Name = "Р¤С‘РґРѕСЂ",
+                Surname = "Р”РѕСЃС‚РѕРµРІСЃРєРёР№",
+                Country = "Р РѕСЃСЃРёСЏ",
                 Birthday = new DateTime(1821, 11, 11)
             },
             new AuthorEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Антон",
-                Surname = "Чехов",
-                Country = "Россия",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d474"),
+                Name = "РђРЅС‚РѕРЅ",
+                Surname = "Р§РµС…РѕРІ",
+                Country = "Р РѕСЃСЃРёСЏ",
                 Birthday = new DateTime(1860, 1, 29)
             },
             new AuthorEntity        
             {
-                Id = Guid.NewGuid(),
-                Name = "Александр",
-                Surname = "Пушкин",
-                Country = "Россия",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d475"),
+                Name = "РђР»РµРєСЃР°РЅРґСЂ",
+                Surname = "РџСѓС€РєРёРЅ",
+                Country = "Р РѕСЃСЃРёСЏ",
                 Birthday = new DateTime(1799, 6, 6)
             },
             new AuthorEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Михаил",
-                Surname = "Лермонтов",
-                Country = "Россия",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d476"),
+                Name = "РњРёС…Р°РёР»",
+                Surname = "Р›РµСЂРјРѕРЅС‚РѕРІ",
+                Country = "Р РѕСЃСЃРёСЏ",
                 Birthday = new DateTime(1814, 10, 15)
             }
         };
-
-        context.Authors.AddRange(authors);
 
         var books = new List<BookEntity>
         {
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Война и мир",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d477"),
+                Name = "Р’РѕР№РЅР° Рё РјРёСЂ",
                 ISBN = "978-5-17-090000-1",
                 Genre = Genre.ScienceFiction,
-                Description = "Роман-эпопея Льва Толстого",
+                Description = "Р РѕРјР°РЅ-СЌРїРѕРїРµСЏ Р›СЊРІР° РўРѕР»СЃС‚РѕРіРѕ",
                 AuthorId = authors[0].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Анна Каренина",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d478"),
+                Name = "РђРЅРЅР° РљР°СЂРµРЅРёРЅР°",
                 ISBN = "978-5-17-090000-2",
                 Genre = Genre.Fiction,
-                Description = "Роман Льва Толстого",
+                Description = "Р РѕРјР°РЅ Р›СЊРІР° РўРѕР»СЃС‚РѕРіРѕ",
                 AuthorId = authors[0].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Воскресение",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d489"),
+                Name = "Р’РѕСЃРєСЂРµСЃРµРЅРёРµ",
                 ISBN = "978-5-17-090000-3",
                 Genre = Genre.Adventure,
-                Description = "Роман Льва Толстого",
+                Description = "Р РѕРјР°РЅ Р›СЊРІР° РўРѕР»СЃС‚РѕРіРѕ",
                 AuthorId = authors[0].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Смерть Ивана Ильича",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d481"),
+                Name = "РЎРјРµСЂС‚СЊ РРІР°РЅР° РР»СЊРёС‡Р°",
                 ISBN = "978-5-17-090000-4",
                 Genre = Genre.Adventure,
-                Description = "Повесть Льва Толстого",
+                Description = "РџРѕРІРµСЃС‚СЊ Р›СЊРІР° РўРѕР»СЃС‚РѕРіРѕ",
                 AuthorId = authors[0].Id
             },
 
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Преступление и наказание",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d482"),
+                Name = "РџСЂРµСЃС‚СѓРїР»РµРЅРёРµ Рё РЅР°РєР°Р·Р°РЅРёРµ",
                 ISBN = "978-5-17-090000-5",
                 Genre = Genre.Thriller,
-                Description = "Роман Фёдора Достоевского",
+                Description = "Р РѕРјР°РЅ Р¤С‘РґРѕСЂР° Р”РѕСЃС‚РѕРµРІСЃРєРѕРіРѕ",
                 AuthorId = authors[1].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Идиот",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d483"),
+                Name = "РРґРёРѕС‚",
                 ISBN = "978-5-17-090000-6",
                 Genre = Genre.Other,
-                Description = "Роман Фёдора Достоевского",
+                Description = "Р РѕРјР°РЅ Р¤С‘РґРѕСЂР° Р”РѕСЃС‚РѕРµРІСЃРєРѕРіРѕ",
                 AuthorId = authors[1].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Братья Карамазовы",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d484"),
+                Name = "Р‘СЂР°С‚СЊСЏ РљР°СЂР°РјР°Р·РѕРІС‹",
                 ISBN = "978-5-17-090000-7",
                 Genre = Genre.NonFiction,
-                Description = "Роман Фёдора Достоевского",
+                Description = "Р РѕРјР°РЅ Р¤С‘РґРѕСЂР° Р”РѕСЃС‚РѕРµРІСЃРєРѕРіРѕ",
                 AuthorId = authors[1].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Бесы",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d485"),
+                Name = "Р‘РµСЃС‹",
                 ISBN = "978-5-17-090000-8",
                 Genre = Genre.ScienceFiction,
-                Description = "Роман Фёдора Достоевского",
+                Description = "Р РѕРјР°РЅ Р¤С‘РґРѕСЂР° Р”РѕСЃС‚РѕРµРІСЃРєРѕРіРѕ",
                 AuthorId = authors[1].Id
             },
 
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Вишнёвый сад",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d486"),
+                Name = "Р’РёС€РЅС‘РІС‹Р№ СЃР°Рґ",
                 ISBN = "978-5-17-090000-9",
                 Genre = Genre.Drama,
-                Description = "Пьеса Антона Чехова",
+                Description = "РџСЊРµСЃР° РђРЅС‚РѕРЅР° Р§РµС…РѕРІР°",
                 AuthorId = authors[2].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Чайка",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d487"),
+                Name = "Р§Р°Р№РєР°",
                 ISBN = "978-5-17-090000-10",
                 Genre = Genre.Drama,
-                Description = "Пьеса Антона Чехова",
+                Description = "РџСЊРµСЃР° РђРЅС‚РѕРЅР° Р§РµС…РѕРІР°",
                 AuthorId = authors[2].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Три сестры",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d488"),
+                Name = "РўСЂРё СЃРµСЃС‚СЂС‹",
                 ISBN = "978-5-17-090000-11",
                 Genre = Genre.Drama,
-                Description = "Пьеса Антона Чехова",
+                Description = "РџСЊРµСЃР° РђРЅС‚РѕРЅР° Р§РµС…РѕРІР°",
                 AuthorId = authors[2].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Дядя Ваня",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d189"),
+                Name = "Р”СЏРґСЏ Р’Р°РЅСЏ",
                 ISBN = "978-5-17-090000-12",
                 Genre = Genre.Drama,
-                Description = "Пьеса Антона Чехова",
+                Description = "РџСЊРµСЃР° РђРЅС‚РѕРЅР° Р§РµС…РѕРІР°",
                 AuthorId = authors[2].Id
             },
 
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Евгений Онегин",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d181"),
+                Name = "Р•РІРіРµРЅРёР№ РћРЅРµРіРёРЅ",
                 ISBN = "978-5-17-090000-13",
                 Genre = Genre.Poetry,
-                Description = "Роман в стихах Александра Пушкина",
+                Description = "Р РѕРјР°РЅ РІ СЃС‚РёС…Р°С… РђР»РµРєСЃР°РЅРґСЂР° РџСѓС€РєРёРЅР°",
                 AuthorId = authors[3].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Капитанская дочка",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d182"),
+                Name = "РљР°РїРёС‚Р°РЅСЃРєР°СЏ РґРѕС‡РєР°",
                 ISBN = "978-5-17-090000-14",
                 Genre = Genre.Drama,
-                Description = "Роман Александра Пушкина",
+                Description = "Р РѕРјР°РЅ РђР»РµРєСЃР°РЅРґСЂР° РџСѓС€РєРёРЅР°",
                 AuthorId = authors[3].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Пиковая дама",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d183"),
+                Name = "РџРёРєРѕРІР°СЏ РґР°РјР°",
                 ISBN = "978-5-17-090000-15",
                 Genre = Genre.Poetry,
-                Description = "Повесть Александра Пушкина",
+                Description = "РџРѕРІРµСЃС‚СЊ РђР»РµРєСЃР°РЅРґСЂР° РџСѓС€РєРёРЅР°",
                 AuthorId = authors[3].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Руслан и Людмила",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d184"),
+                Name = "Р СѓСЃР»Р°РЅ Рё Р›СЋРґРјРёР»Р°",
                 ISBN = "978-5-17-090000-16",
                 Genre = Genre.Poetry,
-                Description = "Поэма Александра Пушкина",
+                Description = "РџРѕСЌРјР° РђР»РµРєСЃР°РЅРґСЂР° РџСѓС€РєРёРЅР°",
                 AuthorId = authors[3].Id
             },
 
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Герой нашего времени",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d185"),
+                Name = "Р“РµСЂРѕР№ РЅР°С€РµРіРѕ РІСЂРµРјРµРЅРё",
                 ISBN = "978-5-17-090000-17",
                 Genre = Genre.Mystery,
-                Description = "Роман Михаила Лермонтова",
+                Description = "Р РѕРјР°РЅ РњРёС…Р°РёР»Р° Р›РµСЂРјРѕРЅС‚РѕРІР°",
                 AuthorId = authors[4].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Демон",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d186"),
+                Name = "Р”РµРјРѕРЅ",
                 ISBN = "978-5-17-090000-18",
                 Genre = Genre.Poetry,
-                Description = "Поэма Михаила Лермонтова",
+                Description = "РџРѕСЌРјР° РњРёС…Р°РёР»Р° Р›РµСЂРјРѕРЅС‚РѕРІР°",
                 AuthorId = authors[4].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Мцыри",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d187"),
+                Name = "РњС†С‹СЂРё",
                 ISBN = "978-5-17-090000-19",
                 Genre = Genre.Poetry,
-                Description = "Поэма Михаила Лермонтова",
+                Description = "РџРѕСЌРјР° РњРёС…Р°РёР»Р° Р›РµСЂРјРѕРЅС‚РѕРІР°",
                 AuthorId = authors[4].Id
             },
             new BookEntity
             {
-                Id = Guid.NewGuid(),
-                Name = "Бородино",
+                Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d188"),
+                Name = "Р‘РѕСЂРѕРґРёРЅРѕ",
                 ISBN = "978-5-17-090000-20",
                 Genre = Genre.Poetry,
-                Description = "Стихотворение Михаила Лермонтова",
+                Description = "РЎС‚РёС…РѕС‚РІРѕСЂРµРЅРёРµ РњРёС…Р°РёР»Р° Р›РµСЂРјРѕРЅС‚РѕРІР°",
                 AuthorId = authors[4].Id
             }
         };
 
-        context.Books.AddRange(books);
-        context.SaveChanges();
+        modelBuilder.Entity<UserEntity>().HasData(users);
+        modelBuilder.Entity<AuthorEntity>().HasData(authors);
+        modelBuilder.Entity<BookEntity>().HasData(books);
     }
 }

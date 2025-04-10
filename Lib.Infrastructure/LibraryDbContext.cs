@@ -1,4 +1,5 @@
 ﻿using Lib.Core.Entities;
+using Library.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -9,10 +10,13 @@ namespace Lib.Infrastructure
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<AuthorEntity> Authors { get; set; }
         public DbSet<BookEntity> Books { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly);
+            InitDatabase.Initialize(modelBuilder);
         }
+
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<DateTime>()

@@ -17,6 +17,7 @@ using Microsoft.Extensions.FileProviders;
 using Lib.Application;
 using Lib.Application.Mappers;
 using Lib.Core.Abstractions.Repositories;
+using Lib.Infrastructure.Services;
 using Lib.Core.Abstractions.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,10 @@ services.AddSwaggerGen(c =>
 });
 
 services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+
+services.Configure<SMPTSettings>(builder.Configuration.GetSection("SmtpSettings"));
+services.AddScoped<INotificationService, NotificationService>();
+
 
 services.AddDbContext<LibraryDbContext>(options =>
 {
@@ -67,6 +72,10 @@ services.AddUseCases();
 services.AddAutoMapper(typeof(UserProfile).Assembly);
 
 services.AddScoped<IFileService, FileService>();
+services.AddSingleton<ICacheService, CacheService>();
+
+
+
 
 var app = builder.Build();
 

@@ -24,7 +24,7 @@ namespace Lib.Application.UseCases.Authors
 
             if (existingAuthor == null)
             {
-                throw new NotFoundException($"Author with id {request.id} not found");
+                throw new NotFoundException($"Author with id {request.Id} not found");
             }
             
 

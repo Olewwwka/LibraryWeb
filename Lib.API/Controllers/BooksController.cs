@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Lib.API.DTOs.Books;
 using Lib.Application.Abstractions.Books;
 using Lib.Application.Contracts.Requests;
-using Lib.Application.UseCases.Books;
 using Lib.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -109,10 +107,8 @@ namespace Lib.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> AddBook([FromBody]AddBookDTO addBookDTO, CancellationToken cancellationToken)
+        public async Task<IResult> AddBook([FromBody]AddBookRequest request, CancellationToken cancellationToken)
         {
-            var request = _mapper.Map<AddBookRequest>(addBookDTO);
-
             var book = await _addBookUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(book);
@@ -138,9 +134,8 @@ namespace Lib.API.Controllers
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> UpdateBook([FromBody]UpdateBookInfoDTO updateBookInfoDTO, CancellationToken cancellationToken)
+        public async Task<IResult> UpdateBook([FromBody]UpdateBookInfoRequest request, CancellationToken cancellationToken)
         {
-            var request = _mapper.Map<UpdateBookInfoRequest>(updateBookInfoDTO);
             var book = await _updateBookInfoUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(book);

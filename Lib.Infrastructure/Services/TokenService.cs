@@ -14,22 +14,22 @@ namespace Lib.Infrastructure.Services
     public class TokenService : ITokenService
     {
         private readonly JwtOptions _jwtOptions;
-        private readonly IConnectionMultiplexer _redis;
-        public TokenService(IOptions<JwtOptions> jwtOptions,
-            IConnectionMultiplexer redis)
+        private readonly ICacheService _cache;
+
+        public TokenService(IOptions<JwtOptions> jwtOptions, ICacheService cache)
         {
             _jwtOptions = jwtOptions.Value;
-            _redis = redis;
+            _cache = cache;
         }
 
         public string GenerateAccessToken(UserEntity user)
         {
             var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Role, user.Role)
-            };
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role)
+        };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -49,8 +49,6 @@ namespace Lib.Infrastructure.Services
             var randomNumber = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-
-
             return Convert.ToBase64String(randomNumber);
         }
 
@@ -60,7 +58,7 @@ namespace Lib.Infrastructure.Services
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = false,
+                ValidateLifetime = false, 
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _jwtOptions.Issuer,
                 ValidAudience = _jwtOptions.Audience,
@@ -74,17 +72,15 @@ namespace Lib.Infrastructure.Services
 
         public async Task StoreRefreshTokenAsync(Guid userId, string refreshToken)
         {
-            var db = _redis.GetDatabase();
-            await db.StringSetAsync(
-                $"{refreshToken}",
-                $"{userId}",
-                TimeSpan.FromDays(_jwtOptions.RefreshTokenExpiryDays));
+            await _cache.SetAsync(
+                key: $"refresh-token:{userId}",
+                value: refreshToken,
+                expiry: TimeSpan.FromDays(_jwtOptions.RefreshTokenExpiryDays));
         }
 
         public async Task<bool> ValidateRefreshTokenAsync(string userId, string refreshToken)
         {
-            var db = _redis.GetDatabase();
-            var storedToken = await db.StringGetAsync($"refresh-token:{userId}");
+            var storedToken = await _cache.GetAsync($"refresh-token:{userId}");
             return storedToken == refreshToken;
         }
     }

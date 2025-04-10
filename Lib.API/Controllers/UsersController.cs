@@ -1,8 +1,6 @@
 using AutoMapper;
-using Lib.API.DTOs.Users;
+using Lib.Application.Abstractions.Users;
 using Lib.Application.Contracts.Requests;
-using Lib.Application.UseCases.Auth;
-using Lib.Application.UseCases.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,17 +10,17 @@ namespace Lib.API.Controllers
     [Route("api/users")]
     public class UsersController : ControllerBase
     {
-        public BorrowBookUseCase _borrowBookUseCase;
-        public ReturnBookUseCase _returnBookUseCase;
-        public GetUsersBorrowedBooksUseCase _getUsersBorrowedBooksUseCase;
-        public RefreshTokenUseCase _refreshTokenUseCase;
+        public IBorrowBookUseCase _borrowBookUseCase;
+        public IReturnBookUseCase _returnBookUseCase;
+        public IGetUsersBorrowedBooksUseCase _getUsersBorrowedBooksUseCase;
+        public IRefreshTokenUseCase _refreshTokenUseCase;
         private readonly IMapper _mapper;
 
         public UsersController(
-            BorrowBookUseCase borrowBookUseCase,
-            ReturnBookUseCase returnBookUSeCase,
-            GetUsersBorrowedBooksUseCase getUsersBorrowedBooksUseCase,
-            RefreshTokenUseCase refreshTokenUseCase,
+            IBorrowBookUseCase borrowBookUseCase,
+            IReturnBookUseCase returnBookUSeCase,
+            IGetUsersBorrowedBooksUseCase getUsersBorrowedBooksUseCase,
+            IRefreshTokenUseCase refreshTokenUseCase,
             IMapper mapper)
         {
             _borrowBookUseCase = borrowBookUseCase;
@@ -34,9 +32,8 @@ namespace Lib.API.Controllers
 
         [HttpPost("book/borrow")]
         [Authorize]
-        public async Task<IResult> BorrowBook([FromBody]BorrowBookDTO borrowBookDTO, CancellationToken cancellationToken)
+        public async Task<IResult> BorrowBook([FromBody]BorrowBookRequest request, CancellationToken cancellationToken)
         {
-            var request = _mapper.Map<BorrowBookRequest>(borrowBookDTO);
             
             var book = await _borrowBookUseCase.ExecuteAsync(request, cancellationToken);
 
@@ -69,8 +66,10 @@ namespace Lib.API.Controllers
                 var refreshToken = Request.Cookies["refreshToken"];
                 var accessToken = Request.Cookies["jwtToken"];
 
-                var (newAccessToken, newRefreshToken, user) =
-                    await _refreshTokenUseCase.ExecuteAsync(accessToken, refreshToken, cancellationToken);
+                var request = new RefreshTokenRequest(accessToken,refreshToken);
+
+                var (newAccessToken, newRefreshToken) =
+                    await _refreshTokenUseCase.ExecuteAsync(request, cancellationToken);
 
                 var cookieOptions = new CookieOptions
                 {
@@ -86,7 +85,6 @@ namespace Lib.API.Controllers
                 return Results.Ok(new
                 {
                     AccessToken = newAccessToken,
-                    User = user
                 });
             }
         }

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using StackExchange.Redis;
-
-namespace Lib.Application.Models
+﻿namespace Lib.Application.Models
 {
     public class User
     {

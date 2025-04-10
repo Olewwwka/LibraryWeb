@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Lib.Application.Contracts.Requests
 {
-    internal class RefreshTokenRequest
-    {
-    }
+    public record RefreshTokenRequest
+    (
+        string OldAccessToken,
+        string OldRefreshToken
+    );
 }

@@ -8,12 +8,21 @@ namespace Lib.API.Extensions
         {
             var assembly = typeof(AddBookUseCase).Assembly;
 
-            var useCasesTypes = assembly.GetTypes()
+            var useCaseTypes = assembly.GetTypes()
                 .Where(t => t.Name.EndsWith("UseCase") && t.IsClass && !t.IsAbstract);
 
-            foreach (var type in useCasesTypes)
+            var useCaseInterfaceTypes = assembly.GetTypes()
+                .Where(t => t.Name.EndsWith("UseCase") && t.IsInterface);
+
+            foreach (var implementationType in useCaseTypes)
             {
-                services.AddScoped(type);
+                var implementedInterfaces = implementationType.GetInterfaces()
+                    .Where(i => useCaseInterfaceTypes.Contains(i));
+
+                foreach (var interfaceType in implementedInterfaces)
+                {
+                    services.AddScoped(interfaceType, implementationType);
+                }
             }
         }
     }

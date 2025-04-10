@@ -39,6 +39,8 @@ namespace Lib.Application.UseCases.Users
             bookEntity.ReturnTime = request.returnTime;
             bookEntity.UserId = request.userId;
 
+
+            await _unitOfWork.BooksRepository.UpdateBookAsync(bookEntity, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             
 

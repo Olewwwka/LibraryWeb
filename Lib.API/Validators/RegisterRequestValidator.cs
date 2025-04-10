@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Lib.API.Contracts;
 using Lib.API.Constants.Validation;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.API.Validators
 {

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Lib.Application.UseCases.Auth;
 using AutoMapper;
 using Lib.Application.Contracts.Requests;
-using Lib.API.DTOs.Auth;
 using Lib.Application.Abstractions;
 
 namespace Lib.API.Controllers
@@ -26,20 +24,16 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IResult> Register([FromBody]RegisterDTO registerDTO, CancellationToken cancellationToken)
+        public async Task<IResult> Register([FromBody]RegisterRequest request, CancellationToken cancellationToken)
         { 
-
-            var request = _mapper.Map<RegisterRequest>(registerDTO);
             var response = await _registerUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(response);
         }
 
         [HttpPost("login")]
-        public async Task<IResult> Login([FromBody]LoginDTO loginDTO, CancellationToken cancellationToken)
+        public async Task<IResult> Login([FromBody]LoginRequest request, CancellationToken cancellationToken)
         {
-            var request = _mapper.Map<LoginRequest>(loginDTO);
-
             var response = await _loginUseCase.ExecuteAsync(request, cancellationToken);
 
             var cookieOptions = new CookieOptions

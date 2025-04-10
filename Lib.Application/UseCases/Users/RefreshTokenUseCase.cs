@@ -1,40 +1,40 @@
-﻿using Lib.Core.Abstractions.Repositories;
+﻿using Lib.Application.Abstractions.Users;
+using Lib.Application.Contracts.Requests;
+using Lib.Application.Contracts.Responses;
+using Lib.Core.Abstractions.Repositories;
 using Lib.Core.Abstractions.Services;
 using Lib.Core.Entities;
-using Lib.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
-using StackExchange.Redis;
 using System.Security.Claims;
 
 namespace Lib.Application.UseCases.Auth
 {
-    public class RefreshTokenUseCase
+    public class RefreshTokenUseCase : IRefreshTokenUseCase
     {
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IConnectionMultiplexer _redis;
+        private readonly ICacheService _cacheService;
 
         public RefreshTokenUseCase(
             ITokenService tokenService,
             IUnitOfWork unitOfWork,
-            IConnectionMultiplexer redis)
+            ICacheService cacheService)
         {
-            _redis = redis;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
+            _cacheService = cacheService;
         }
 
-        public async Task<(string AccessToken, string RefreshToken, UserEntity User)> ExecuteAsync(
-            string oldAccessToken,
-            string oldRefreshToken,
+        public async Task<RefreshTokenResponse> ExecuteAsync(
+            RefreshTokenRequest request,
             CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(oldRefreshToken) || string.IsNullOrEmpty(oldAccessToken))
+            if (string.IsNullOrEmpty(request.OldRefreshToken) || string.IsNullOrEmpty(request.OldAccessToken))
             {
                 throw new UnauthorizedAccessException("Invalid tokens");
             }
 
-            var principal = _tokenService.GetPrincipalFromExpiredToken(oldAccessToken);
+            var principal = _tokenService.GetPrincipalFromExpiredToken(request.OldAccessToken);
             var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
@@ -42,10 +42,10 @@ namespace Lib.Application.UseCases.Auth
                 throw new UnauthorizedAccessException("Invalid token claims");
             }
 
-            var db = _redis.GetDatabase();
-            var storedUserId = await db.StringGetAsync(oldRefreshToken);
+            var cacheKey = $"refresh-token:{userId}";
+            var storedRefreshToken = await _cacheService.GetAsync(cacheKey);
 
-            if (storedUserId != userId.ToString())
+            if (storedRefreshToken != request.OldRefreshToken)
             {
                 throw new UnauthorizedAccessException("Refresh token mismatch");
             }
@@ -59,10 +59,9 @@ namespace Lib.Application.UseCases.Auth
             var newAccessToken = _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            await db.KeyDeleteAsync(oldRefreshToken);
             await _tokenService.StoreRefreshTokenAsync(userId, newRefreshToken);
 
-            return (newAccessToken, newRefreshToken, user);
+            return new RefreshTokenResponse(newAccessToken, newRefreshToken);
         }
     }
 }

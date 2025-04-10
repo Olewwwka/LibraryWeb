@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using Lib.API.DTOs.Authors;
 using Lib.Application.Abstractions.Authors;
 using Lib.Application.Contracts.Requests;
-using Lib.Application.Models;
-using Lib.Application.UseCases.Authors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,18 +37,16 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IResult> AddAuthor([FromBody]AddAuthorDTO addAuthorDTO, CancellationToken cancellationToken)
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IResult> AddAuthor([FromBody]AddAuthorRequest request, CancellationToken cancellationToken)
         {
-            var request = _mapper.Map<AddAuthorRequest>(addAuthorDTO);
-
             var author = await _addAuthorUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(author);
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> GetAllAuthors(CancellationToken cancellationToken)
         {
             var authors = await _getAllAuthorsUseCase.ExecuteAsync(cancellationToken);
@@ -79,14 +74,8 @@ namespace Lib.API.Controllers
 
         [HttpPatch("up/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> UpdateAuthor([FromBody]UpdateAuthorDTO updateAuthorDTO, CancellationToken cancellationToken)
+        public async Task<IResult> UpdateAuthor([FromBody]UpdateAuthorRequest request, CancellationToken cancellationToken)
         {
-            var author = new Author( updateAuthorDTO.Name, updateAuthorDTO.Surname, updateAuthorDTO.Birthday, updateAuthorDTO.Country);
-
-            author.Id = updateAuthorDTO.Id;
-
-            var request = _mapper.Map<UpdateAuthorRequest>(author);
-
             var response = await _updateAuthorInfoUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(response);

@@ -1,10 +1,10 @@
 using FluentValidation;
 using Lib.API.Constants.Validation;
-using Lib.API.Contracts;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.API.Validators
 {
-    public class AddAuthorRequestValidator : AbstractValidator<AuthorRequest>
+    public class AddAuthorRequestValidator : AbstractValidator<AddAuthorRequest>
     {
         public AddAuthorRequestValidator()
         {

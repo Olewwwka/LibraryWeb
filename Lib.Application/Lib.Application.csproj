@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lib.Core\Lib.Core.csproj" />
-    <ProjectReference Include="..\Lib.Infrastructure\Lib.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

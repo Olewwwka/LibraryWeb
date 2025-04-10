@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
-using Lib.API.Contracts;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Lib.API.Constants.Validation;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.API.Validators
 {
-    public class UpdateBookRequestValidator : AbstractValidator<UpdateBookRequest>
+    public class UpdateBookRequestValidator : AbstractValidator<UpdateBookInfoRequest>
     {
         public UpdateBookRequestValidator()
         {

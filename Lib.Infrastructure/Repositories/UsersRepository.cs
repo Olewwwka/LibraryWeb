@@ -1,4 +1,4 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Repositories;
 using Lib.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -39,49 +39,6 @@ namespace Lib.Infrastructure.Repositories
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _context.AddAsync(user, cancellationToken);
-        }
-
-        public async Task<BookEntity> ReturnBookAsync(Guid bookId, CancellationToken cancellationToken)
-        {
-            var book = await _context.Books
-                .FirstOrDefaultAsync(b => b.Id == bookId, cancellationToken);
-
-            if (book == null)
-                throw new KeyNotFoundException("Book not found");
-
-            if (book.UserId == null)
-                throw new InvalidOperationException("Book not borrowed");
-
-            book.UserId = null;
-            book.BorrowTime = DateTime.MinValue;
-            book.ReturnTime = DateTime.MinValue;
-
-            return book;
-        }
-
-        public async Task<BookEntity> BorrowBookAsync(
-          Guid userId,
-          Guid bookId,
-          DateTime borrowTime,
-          DateTime returnTime,
-          CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var bookEntity = await _context.Books
-                .FirstOrDefaultAsync(book => book.Id == bookId, cancellationToken);
-
-            if (bookEntity == null)
-                throw new KeyNotFoundException("Book not found");
-
-            if (bookEntity.UserId != null)
-                throw new InvalidOperationException("Book is already borrowed");
-
-            bookEntity.UserId = userId;
-            bookEntity.BorrowTime = borrowTime;
-            bookEntity.ReturnTime = returnTime;
-
-            return bookEntity;
         }
 
         public async Task<List<BookEntity>> GetUserBorrowedBooksAsync(Guid id, CancellationToken cancellationToken)

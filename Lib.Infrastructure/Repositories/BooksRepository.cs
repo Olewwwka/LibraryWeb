@@ -1,4 +1,4 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Repositories;
 using Lib.Core.Entities;
 using Lib.Core.Enums;
 using Microsoft.AspNetCore.Routing.Constraints;
@@ -85,7 +85,6 @@ namespace Lib.Infrastructure.Repositories
             cancellationToken.ThrowIfCancellationRequested();
 
             await _context.Books.AddAsync(book, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return book;
         }
@@ -116,31 +115,33 @@ namespace Lib.Infrastructure.Repositories
         }
 
 
-        public async Task<Guid> UpdateBookAsync(Guid id, string isbn, string name, Genre genre, string description, CancellationToken cancellationToken)
+        public async Task<Guid> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _context.Books
-                .Where(book => book.Id == id)
-                .ExecuteUpdateAsync(book => book
-                    .SetProperty(book => book.ISBN, isbn)
-                    .SetProperty(book => book.Name, name)
-                    .SetProperty(book => book.Genre, genre)
-                    .SetProperty(book => book.Description, description),
-                    cancellationToken);
+            var currentBook = await _context.Authors.FindAsync(bookEntity.Id, cancellationToken);
+            if (currentBook != null)
+            {
+                _context.Entry(currentBook).CurrentValues.SetValues(bookEntity);
+            }
+            else
+            {
+                _context.Update(bookEntity);
+            }
 
-            return id;
+            return bookEntity.Id;
         }
 
-        public async Task<Guid> DeleteBookAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Guid> RemoveBookAsync(Guid id, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            var book = await _context.Authors.FindAsync(id, cancellationToken);
 
-            await _context.Books
-                .Where(book => book.Id == id)
-                .ExecuteDeleteAsync(cancellationToken);
+            if (book != null)
+            {
+                _context.Authors.Remove(book);
+            }
 
-            return id;
+            return book.Id;
         }
 
         public async Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken)

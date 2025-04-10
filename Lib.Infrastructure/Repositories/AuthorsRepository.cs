@@ -1,4 +1,4 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Repositories;
 using Lib.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
@@ -16,6 +16,7 @@ namespace Lib.Infrastructure.Repositories
         public async Task<List<AuthorEntity>> GetAllAuthorsAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             return await _context.Authors.Include(author => author.Books).ToListAsync(cancellationToken);
         }
 
@@ -32,44 +33,42 @@ namespace Lib.Infrastructure.Repositories
         public async Task<AuthorEntity> AddAuthorAsync(AuthorEntity authorEntity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             await _context.Authors.AddAsync(authorEntity, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return authorEntity;
         }
 
         public async Task<Guid> UpdateAuthorAsync(
-            Guid authorId,
-            string name,
-            string surname,
-            DateTime birthday,
-            string country,
+            AuthorEntity authorEntity,
             CancellationToken cancellationToken)
 
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _context.Authors
-                .Where(author => author.Id == authorId)
-                .ExecuteUpdateAsync(author => author
-                    .SetProperty(author => author.Name, name)
-                    .SetProperty(author => author.Surname, surname)
-                    .SetProperty(author => author.Birthday, birthday)
-                    .SetProperty(author => author.Country, country),
-                    cancellationToken);
+            var currentAuthor = await _context.Authors.FindAsync(authorEntity.Id, cancellationToken);
+            if (currentAuthor != null)
+            {
+                _context.Entry(currentAuthor).CurrentValues.SetValues(authorEntity);
+            }
+            else
+            {
+                _context.Update(authorEntity);
+            }
 
-            return authorId;
+            return authorEntity.Id;
         }
 
-        public async Task<Guid> DeleteAuthorAsync(Guid authorId, CancellationToken cancellationToken)
+        public async Task<Guid> RemoveAuthorAsync(Guid authorId, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            var author = await _context.Authors.FindAsync(authorId, cancellationToken);
 
-            await _context.Authors
-                .Where(author => author.Id == authorId)
-                .ExecuteDeleteAsync(cancellationToken);
+            if (author != null)
+            {
+                _context.Authors.Remove(author);
+            }
 
-            return authorId;
+            return author.Id;
         }
 
         public async Task<(List<BookEntity> Books, int TotalCount)> GetBooksByAuthorAsync(Guid authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)

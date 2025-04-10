@@ -1,6 +1,6 @@
 using Lib.Core.Entities;
 
-namespace Lib.Core.Abstractions
+namespace Lib.Core.Abstractions.Services
 {
     public interface INotificationService
     {

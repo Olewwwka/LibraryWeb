@@ -1,4 +1,4 @@
-﻿namespace Lib.Core.Abstractions
+﻿namespace Lib.Core.Abstractions.Services
 {
     public interface IPasswordHasher
     {

@@ -1,7 +1,7 @@
 ﻿using Lib.Core.Entities;
 using System.Security.Claims;
 
-namespace Lib.Core.Abstractions
+namespace Lib.Core.Abstractions.Services
 {
     public interface ITokenService
     {

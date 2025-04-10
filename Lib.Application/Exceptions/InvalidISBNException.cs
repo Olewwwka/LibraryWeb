@@ -1,4 +1,4 @@
-﻿namespace Lib.Core.Exceptions
+﻿namespace Lib.Application.Exceptions
 {
     public class InvalidISBNException : Exception
     {

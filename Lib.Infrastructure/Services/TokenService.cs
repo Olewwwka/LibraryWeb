@@ -1,4 +1,4 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Services;
 using Lib.Core.Entities;
 using Lib.Infrastructure.Identity;
 using Microsoft.Extensions.Options;

@@ -1,4 +1,5 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Repositories;
+using Lib.Core.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

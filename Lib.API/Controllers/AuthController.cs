@@ -56,8 +56,6 @@ namespace Lib.API.Controllers
                 user.Email,
                 user.Name,
                 user.Role,
-                accessToken,
-                refreshToken,
             });
         }
     }

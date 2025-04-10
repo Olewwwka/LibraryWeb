@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RegisterRequest = Lib.API.Contracts.RegisterRequest;
 using LoginRequest = Lib.API.Contracts.LoginRequest;
-using Microsoft.AspNetCore.Authorization;
 using Lib.Application.UseCases.Auth;
 
 namespace Lib.API.Controllers
@@ -25,7 +24,13 @@ namespace Lib.API.Controllers
         { 
             var user = await _registerUseCase.ExecuteAsync(request.Name, request.Email, request.Password, cancellationToken);
 
-            return Results.Ok(user);
+            return Results.Ok(new
+            {
+                user.Id,
+                user.Email,
+                user.Name,
+                user.Role
+            });
         }
 
         [HttpPost("login")]
@@ -45,8 +50,15 @@ namespace Lib.API.Controllers
             Responce.Cookies.Append("jwtToken", accessToken, cookieOptions);
             Responce.Cookies.Append("refreshToken", refreshToken, cookieOptions);
 
-            return Results.Ok(user);
+            return Results.Ok(new
+            {
+                user.Id,
+                user.Email,
+                user.Name,
+                user.Role,
+                accessToken,
+                refreshToken,
+            });
         }
-
     }
 }

@@ -1,7 +1,8 @@
-using Lib.API.Contracts;
+using AutoMapper;
+using Lib.API.DTOs.Users;
+using Lib.Application.Contracts.Requests;
 using Lib.Application.UseCases.Auth;
 using Lib.Application.UseCases.Users;
-using Lib.Core.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,33 +16,40 @@ namespace Lib.API.Controllers
         public ReturnBookUseCase _returnBookUseCase;
         public GetUsersBorrowedBooksUseCase _getUsersBorrowedBooksUseCase;
         public RefreshTokenUseCase _refreshTokenUseCase;
+        private readonly IMapper _mapper;
 
         public UsersController(
             BorrowBookUseCase borrowBookUseCase,
             ReturnBookUseCase returnBookUSeCase,
             GetUsersBorrowedBooksUseCase getUsersBorrowedBooksUseCase,
-            RefreshTokenUseCase refreshTokenUseCase)
+            RefreshTokenUseCase refreshTokenUseCase,
+            IMapper mapper)
         {
             _borrowBookUseCase = borrowBookUseCase;
             _returnBookUseCase = returnBookUSeCase;
             _getUsersBorrowedBooksUseCase = getUsersBorrowedBooksUseCase;
             _refreshTokenUseCase = refreshTokenUseCase;
+            _mapper = mapper;
         }
 
         [HttpPost("book/borrow")]
         [Authorize]
-        public async Task<IResult> BorrowBook(BorrowBookRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> BorrowBook([FromBody]BorrowBookDTO borrowBookDTO, CancellationToken cancellationToken)
         {
-            var book = await _borrowBookUseCase.ExecuteAsync(request.UserId, request.BookId, request.BorrowTime, request.ReturnTime, cancellationToken);
+            var request = _mapper.Map<BorrowBookRequest>(borrowBookDTO);
+            
+            var book = await _borrowBookUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(book);
         }
 
-        [HttpPost("book/return/{bookId}")]
+        [HttpPost("book/return/{userId}/{bookId}")]
         [Authorize]
-        public async Task<IResult> ReturnBook(Guid bookId, CancellationToken cancellationToken)
+        public async Task<IResult> ReturnBook(Guid userId, Guid bookId, CancellationToken cancellationToken)
         {
-            var book = await _returnBookUseCase.ExecuteAsync(bookId, cancellationToken);
+            var request = new ReturnBookRequest(userId, bookId);
+
+            var book = await _returnBookUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(book);
         }
@@ -83,4 +91,3 @@ namespace Lib.API.Controllers
             }
         }
     }
-}

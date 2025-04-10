@@ -1,11 +1,11 @@
-﻿using Lib.API.Contracts;
+﻿using AutoMapper;
+using Lib.API.DTOs.Books;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Contracts.Requests;
 using Lib.Application.UseCases.Books;
 using Lib.Core.Enums;
-using Lib.Core.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Lib.Core.Abstractions;
-using Microsoft.AspNetCore.Http;
 
 namespace Lib.API.Controllers
 {
@@ -13,28 +13,30 @@ namespace Lib.API.Controllers
     [Route("api/books")]
     public class BooksController : ControllerBase
     {
-        public AddBookUseCase _addBookUseCase;
-        public GetAllBooksUseCase _getAllBooksUseCase;
-        public GetBookByIdUseCase _getBookByIdUseCase;
-        public GetBookByISBNUseCase _getBookByISBNUseCase;
-        public UpdateBookInfoUseCase _updateBookInfoUseCase;
-        public DeleteBookUseCase _deleteBookUseCase;
-        public GetBooksByGenreUseCase _getBooksByGenreUseCase;
-        public GetBooksByGenreAndAuthorUseCase _getBooksByGenreAndAuthorUseCase;
-        public UploadBookImageUseCase _uploadBookImageUseCase;
-        public DeleteBookImageUseCase _deleteBookImageUseCase;
+        public IAddBookUseCase _addBookUseCase;
+        public IGetAllBooksUseCase _getAllBooksUseCase;
+        public IGetBookByIdUseCase _getBookByIdUseCase;
+        public IGetBookByISBNUseCase _getBookByISBNUseCase;
+        public IUpdateBookInfoUseCase _updateBookInfoUseCase;
+        public IDeleteBookUseCase _deleteBookUseCase;
+        public IGetBooksByGenreUseCase _getBooksByGenreUseCase;
+        public IGetBooksByGenreAndAuthorUseCase _getBooksByGenreAndAuthorUseCase;
+        public IUploadBookImageUseCase _uploadBookImageUseCase;
+        public IDeleteBookImageUseCase _deleteBookImageUseCase;
+        private readonly IMapper _mapper;
 
         public BooksController(
-            AddBookUseCase addBookUseCase,
-            GetAllBooksUseCase getAllBooksUseCase, 
-            GetBookByIdUseCase getBookByIdUseCase, 
-            GetBookByISBNUseCase getBookByISBNUseCase, 
-            UpdateBookInfoUseCase updateBookInfoUseCase, 
-            DeleteBookUseCase deleteBookUseCase,
-            GetBooksByGenreUseCase getBooksByGenreUseCase,
-            GetBooksByGenreAndAuthorUseCase getBooksByGenreAndAuthorUseCase,
-            UploadBookImageUseCase uploadBookImageUseCase,
-            DeleteBookImageUseCase deleteBookImageUseCase
+            IAddBookUseCase addBookUseCase,
+            IGetAllBooksUseCase getAllBooksUseCase, 
+            IGetBookByIdUseCase getBookByIdUseCase, 
+            IGetBookByISBNUseCase getBookByISBNUseCase, 
+            IUpdateBookInfoUseCase updateBookInfoUseCase, 
+            IDeleteBookUseCase deleteBookUseCase,
+            IGetBooksByGenreUseCase getBooksByGenreUseCase,
+            IGetBooksByGenreAndAuthorUseCase getBooksByGenreAndAuthorUseCase,
+            IUploadBookImageUseCase uploadBookImageUseCase,
+            IDeleteBookImageUseCase deleteBookImageUseCase,
+            IMapper mapper
             )
         {
             _addBookUseCase = addBookUseCase;
@@ -47,21 +49,24 @@ namespace Lib.API.Controllers
             _getBooksByGenreAndAuthorUseCase = getBooksByGenreAndAuthorUseCase;
             _uploadBookImageUseCase = uploadBookImageUseCase;
             _deleteBookImageUseCase = deleteBookImageUseCase;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [Authorize]
         public async Task<IResult> GetBooks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var (books, totalCount) = await _getAllBooksUseCase.ExecuteAsync(pageNumber, pageSize, cancellationToken);
+            var request = new GetAllBooksRequest(pageNumber, pageSize);
+
+            var response = await _getAllBooksUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(new
             {
-                Books = books,
-                TotalCount = totalCount,
+                response.Books,
+                TotalCount = response.TotalPages,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+                TotalPages = (int)Math.Ceiling(response.TotalPages / (double)pageSize)
             });
         }
 
@@ -69,15 +74,17 @@ namespace Lib.API.Controllers
         [Authorize]
         public async Task<IResult> GetBooksByGenre(Genre genre, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var (books, totalCount) = await _getBooksByGenreUseCase.ExecuteAsync(genre, pageNumber, pageSize, cancellationToken);
+
+            var request = new GetBooksByGenreRequest(genre, pageNumber, pageSize);
+            var response = await _getBooksByGenreUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(new
             {
-                Books = books,
-                TotalCount = totalCount,
+                response.Books,
+                TotalCount = response.TotalPages,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+                TotalPages = (int)Math.Ceiling(response.TotalPages / (double)pageSize)
             });
         }
 
@@ -85,23 +92,28 @@ namespace Lib.API.Controllers
         [Authorize]
         public async Task<IResult> GetBooksByGenreAndAuthor(Genre genre, Guid authorId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var (books, totalCount) = await _getBooksByGenreAndAuthorUseCase.ExecuteAsync(genre, authorId, pageNumber, pageSize, cancellationToken);
+
+            var request = new GetBooksByGenreAndAuthorRequest(genre, authorId, pageNumber, pageSize);
+
+            var response = await _getBooksByGenreAndAuthorUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(new
             {
-                Books = books,
-                TotalCount = totalCount,
+                response.Books,
+                TotalCount = response.TotalPages,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+                TotalPages = (int)Math.Ceiling(response.TotalPages / (double)pageSize)
             });
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> AddBook(AddBookRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> AddBook([FromBody]AddBookDTO addBookDTO, CancellationToken cancellationToken)
         {
-            var book = await _addBookUseCase.ExecuteAsync(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId, cancellationToken);
+            var request = _mapper.Map<AddBookRequest>(addBookDTO);
+
+            var book = await _addBookUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(book);
         }
@@ -126,9 +138,10 @@ namespace Lib.API.Controllers
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> UpdateBook(Guid id, UpdateBookRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> UpdateBook([FromBody]UpdateBookInfoDTO updateBookInfoDTO, CancellationToken cancellationToken)
         {
-            var book = await _updateBookInfoUseCase.ExecuteAsync(id, request.ISBN, request.Name, request.Genre, request.Description, cancellationToken);
+            var request = _mapper.Map<UpdateBookInfoRequest>(updateBookInfoDTO);
+            var book = await _updateBookInfoUseCase.ExecuteAsync(request, cancellationToken);
 
             return Results.Ok(book);
         }
@@ -146,15 +159,18 @@ namespace Lib.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IResult> UploadBookImage(Guid id, IFormFile imageFile, CancellationToken cancellationToken)
         {
-            var imagePath = await _uploadBookImageUseCase.ExecuteAsync(id, imageFile, cancellationToken);
+            var request = new UploadBookImageRequest(id, imageFile);
+
+            var imagePath = await _uploadBookImageUseCase.ExecuteAsync(request, cancellationToken);
+
             return Results.Ok(new { imagePath });
         }
 
         [HttpDelete("{id}/image")]
         [Authorize(Roles = "Admin")]
-        public async Task<IResult> DeleteBookImage(Guid id, string filePath, CancellationToken cancellationToken)
+        public async Task<IResult> DeleteBookImage(Guid id, CancellationToken cancellationToken)
         {
-            var path = await _deleteBookImageUseCase.ExecuteAsync(id, filePath, cancellationToken);
+            var path = await _deleteBookImageUseCase.ExecuteAsync(id, cancellationToken);
             return Results.Ok(path);
         }
     }

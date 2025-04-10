@@ -10,7 +10,7 @@ namespace Lib.Core.Abstractions.Repositories
     public interface IUsersRepository
     {
         Task<UserEntity> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
-        Task<UserEntity> GetUserByIdAsync(Guid id);
+        Task<UserEntity> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
         Task AddUserAsync(UserEntity user, CancellationToken cancellationToken);
         Task<List<BookEntity>> GetUserBorrowedBooksAsync(Guid id, CancellationToken cancellationToken);
     }

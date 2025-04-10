@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
+using Lib.Core.Abstractions.Repositories;
 using Lib.Core.Enums;
-using Lib.Core.Exceptions;
+using Lib.Application.Exceptions;
+using Lib.Application.Models;
+using Lib.Core.Entities;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class UpdateBookInfoUseCase
+    public class UpdateBookInfoUseCase : IUpdateBookInfoUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -15,19 +19,29 @@ namespace Lib.Application.UseCases.Books
             _mapper = mapper;
         }
 
-        public async Task<Guid> ExecuteAsync(Guid id, string isbn, string name, Genre genre, string description, CancellationToken cancellationToken)
+        public async Task<Book> ExecuteAsync(UpdateBookInfoRequest request, CancellationToken cancellationToken)
         {
-            var bookEntity = await _unitOfWork.BooksRepository.GetBookByIdAsync(id, cancellationToken);
+            var bookEntity = await _unitOfWork.BooksRepository.GetBookByIdAsync(request.Id, cancellationToken);
 
-            if (bookEntity == null)
+            if (bookEntity is null)
             {
-                throw new NotFoundException($"Book with ID {id} is not found");
+                throw new NotFoundException($"Book with ID {request.Id} is not found");
             }
 
-            var guid = await _unitOfWork.BooksRepository.UpdateBookAsync(id, isbn, name, genre, description, cancellationToken);
+            var existingBook = _unitOfWork.BooksRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
+
+            if (existingBook is not null)
+            {
+                throw new ConflictException($"Book with ISBN {request.ISBN} already exists");
+            }
+
+            var bookToUp = _mapper.Map<BookEntity>(request);
+
+            var book = await _unitOfWork.BooksRepository.UpdateBookAsync(bookToUp, cancellationToken);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return guid;
+            return _mapper.Map<Book>(bookEntity);
         }
     }
 }

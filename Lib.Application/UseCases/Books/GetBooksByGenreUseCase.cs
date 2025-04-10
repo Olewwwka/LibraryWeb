@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
 using Lib.Application.Models;
 using Lib.Core.Enums;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Contracts.Responses;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class GetBooksByGenreUseCase
+    public class GetBooksByGenreUseCase : IGetBooksByGenreUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -19,13 +22,13 @@ namespace Lib.Application.UseCases.Books
             _mapper = mapper;
         }
 
-        public async Task<(List<Book> Books, int TotalCount)> ExecuteAsync(Genre genre, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<GetAllBooksResponse> ExecuteAsync(GetBooksByGenreRequest request, CancellationToken cancellationToken)
         {
-            var (bookEntities, totalCount) = await _unitOfWork.BooksRepository.GetBooksByGenreAsync(genre, pageNumber, pageSize, cancellationToken);
+            var (bookEntities, totalCount) = await _unitOfWork.BooksRepository.GetBooksByGenreAsync(request.genre, request.pageNumber, request.pageSize, cancellationToken);
 
             var books = _mapper.Map<List<Book>>(bookEntities);
 
-            return (books, totalCount);
+            return new GetAllBooksResponse(books, totalCount);
         }
     }
 }

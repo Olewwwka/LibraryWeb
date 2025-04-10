@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Contracts.Requests;
+using Lib.Application.Contracts.Responses;
 using Lib.Application.Models;
+using Lib.Core.Abstractions.Repositories;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class GetAllBooksUseCase
+    public class GetAllBooksUseCase : IGetAllBooksUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,13 +21,13 @@ namespace Lib.Application.UseCases.Books
             _mapper = mapper;
         }
 
-        public async Task<(List<Book> Books, int TotalCount)> ExecuteAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<GetAllBooksResponse> ExecuteAsync(GetAllBooksRequest request, CancellationToken cancellationToken)
         {
-            var (bookEntities, totalCount) = await _unitOfWork.BooksRepository.GetPaginatedBooksAsync(pageNumber, pageSize, cancellationToken);
+            var (bookEntities, totalCount) = await _unitOfWork.BooksRepository.GetPaginatedBooksAsync(request.PageNumber, request.PageSize, cancellationToken);
             
             var books = _mapper.Map<List<Book>>( bookEntities);
 
-            return (books, totalCount);
+            return new GetAllBooksResponse (books, totalCount);
 
         }
     }

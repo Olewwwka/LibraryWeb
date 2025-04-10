@@ -1,4 +1,5 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Repositories;
+using Lib.Core.Abstractions.Services;
 using Lib.Core.Entities;
 using Lib.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -49,7 +50,7 @@ namespace Lib.Application.UseCases.Auth
                 throw new UnauthorizedAccessException("Refresh token mismatch");
             }
 
-            var user = await _unitOfWork.UsersRepository.GetUserByIdAsync(userId);
+            var user = await _unitOfWork.UsersRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UnauthorizedAccessException("User not found");

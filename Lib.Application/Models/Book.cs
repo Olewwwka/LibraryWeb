@@ -27,5 +27,13 @@ namespace Lib.Application.Models
             AuthorId = authorId;
             ImagePath = "default_image.jpg";
         }
+
+        public Book(string isbn, string name, string description)
+        {
+            ISBN = isbn;
+            Name = name;
+            Description = description;
+            ImagePath = "default_image.jpg";
+        }
     }
 }

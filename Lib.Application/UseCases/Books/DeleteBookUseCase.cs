@@ -1,14 +1,20 @@
-﻿using Lib.Core.Abstractions;
-using Lib.Core.Exceptions;
+﻿using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Exceptions;
+using Lib.Core.Abstractions;
+using Lib.Application.Abstractions.Books;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class DeleteBookUseCase
+    public class DeleteBookUseCase : IDeleteBookUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public DeleteBookUseCase(IUnitOfWork unitOfWork)
+        private readonly IFileService _fileService;
+        public DeleteBookUseCase(
+            IUnitOfWork unitOfWork,
+            IFileService fileService)
         {
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
         }
 
         public async Task<Guid> ExecuteAsync(Guid id, CancellationToken cancellationToken)
@@ -21,8 +27,15 @@ namespace Lib.Application.UseCases.Books
                 throw new NotFoundException($"Book with id {id} is not found");
             }
 
-            var guid = await _unitOfWork.BooksRepository.DeleteBookAsync(id, cancellationToken);
+            if (book.ImagePath != "default_image.jpg")
+            {
+                _fileService.Delete(book.ImagePath);
+            }
+
+            var guid = await _unitOfWork.BooksRepository.RemoveBookAsync(id, cancellationToken);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             return guid;
         }
     }

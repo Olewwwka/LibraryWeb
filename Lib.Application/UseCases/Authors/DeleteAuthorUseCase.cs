@@ -1,9 +1,10 @@
-﻿using Lib.Core.Abstractions;
-using Lib.Core.Exceptions;
+﻿using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Exceptions;
+using Lib.Application.Abstractions.Authors;
 
 namespace Lib.Application.UseCases.Authors
 {
-    public class DeleteAuthorUseCase
+    public class DeleteAuthorUseCase : IDeleteAuthorUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         public DeleteAuthorUseCase(IUnitOfWork unitOfWork)
@@ -21,7 +22,7 @@ namespace Lib.Application.UseCases.Authors
                 throw new NotFoundException($"Author with id {id} not found");
             } 
 
-            var authorId = await _unitOfWork.AuthorsRepository.DeleteAuthorAsync(id, cancellationToken);
+            var authorId = await _unitOfWork.AuthorsRepository.RemoveAuthorAsync(id, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return authorId;

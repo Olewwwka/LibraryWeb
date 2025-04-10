@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
-using Lib.Core.Exceptions;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Exceptions;
+using Lib.Core.Entities;
+using Lib.Application.Models;
+using Lib.Application.Abstractions.Authors;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.Application.UseCases.Authors
 {
-    public class UpdateAuthorInfoUseCase
+    public class UpdateAuthorInfoUseCase : IUpdateAuthorUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -14,19 +18,24 @@ namespace Lib.Application.UseCases.Authors
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Guid> ExecuteAsync(Guid id, string name, string surname, string country, DateTime birthday, CancellationToken cancellationToken)
+        public async Task<Author> ExecuteAsync(UpdateAuthorRequest request, CancellationToken cancellationToken)
         {
-            var author = await _unitOfWork.AuthorsRepository.GetAuthrorByIdAsync(id, cancellationToken);
+            var existingAuthor = await _unitOfWork.AuthorsRepository.GetAuthrorByIdAsync(request.Id, cancellationToken);
 
-            if (author == null)
+            if (existingAuthor == null)
             {
-                throw new NotFoundException($"Author with id {id} not found");
+                throw new NotFoundException($"Author with id {request.id} not found");
             }
+            
 
-            var authorId = await _unitOfWork.AuthorsRepository.UpdateAuthorAsync(id, name, surname, birthday, country, cancellationToken);
+            var authorEntity = await _unitOfWork.AuthorsRepository
+                .UpdateAuthorAsync(_mapper.Map<AuthorEntity>(request), cancellationToken);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return authorId;
+            var author = _mapper.Map<Author>(authorEntity);
+
+            return author;
         }
     }
 }

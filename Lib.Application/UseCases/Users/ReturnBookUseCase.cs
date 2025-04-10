@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
+using Lib.Application.Abstractions.Users;
+using Lib.Application.Contracts.Requests;
+using Lib.Application.Exceptions;
 using Lib.Application.Models;
+using Lib.Core.Abstractions.Repositories;
 
 namespace Lib.Application.UseCases.Users
 {
-    public class ReturnBookUseCase
+    public class ReturnBookUseCase : IReturnBookUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -15,9 +18,30 @@ namespace Lib.Application.UseCases.Users
             _mapper = mapper;
         }
 
-        public async Task<Book> ExecuteAsync(Guid bookId, CancellationToken cancellationToken)
+        public async Task<Book> ExecuteAsync(ReturnBookRequest request, CancellationToken cancellationToken)
         {
-            var bookEntity = await _unitOfWork.UsersRepository.ReturnBookAsync(bookId, cancellationToken);
+            var bookEntity = await _unitOfWork.BooksRepository.GetBookByIdAsync(request.BookId, cancellationToken);
+
+            if (bookEntity is null)
+            {
+                throw new NotFoundException($"Book with id {request.BookId} not found");
+            }
+
+            var userEntity = await _unitOfWork.UsersRepository.GetUserByIdAsync(request.UserId, cancellationToken);
+
+            if(userEntity is null)
+            {
+                throw new NotFoundException($"User with id {request.UserId} not found");
+            }
+
+            if (userEntity.BorrowedBooks!.Any(book => book == bookEntity))
+            {
+                throw new NotFoundException($"User with id {request.UserId} not have book with id {request.BookId}");
+            }
+
+            bookEntity.BorrowTime = DateTime.MinValue;
+            bookEntity.ReturnTime = DateTime.MinValue;
+            bookEntity.UserId = bookEntity.UserId;
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

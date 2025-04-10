@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
 using Lib.Core.Entities;
 using Lib.Application.Models;
-using Lib.Core.Exceptions;
+using Lib.Application.Exceptions;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Abstractions.Authors;
+using Lib.Application.Contracts.Responses;
+using Lib.Application.Contracts.Requests;
+using Lib.Core.Abstractions;
 
 namespace Lib.Application.UseCases.Authors
 {
-    public class AddAuthorUseCase
+    public class AddAuthorUseCase : IAddAuthorUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -16,16 +20,10 @@ namespace Lib.Application.UseCases.Authors
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Author> ExecuteAsync(string name, string surname, DateTime birthday, string country, CancellationToken cancellationToken)
+        public async Task<Author> ExecuteAsync(AddAuthorRequest request, CancellationToken cancellationToken)
         {
-            var authors = await _unitOfWork.AuthorsRepository.GetAllAuthorsAsync(cancellationToken);
 
-            if (authors.Any(author => author.Name == name))
-            {
-                throw new AuthorAlreadyExistsException($"Author with name {name} already exists");
-            }
-
-            var author = new Author(name, surname, birthday, country);
+            var author = new Author(request.Name, request.Surname, request.Birthday, request.Country);
             var authorEntity = _mapper.Map<AuthorEntity>(author);
 
             await _unitOfWork.AuthorsRepository.AddAuthorAsync(authorEntity, cancellationToken);

@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
 using Lib.Core.Entities;
 using Lib.Core.Enums;
-using Lib.Core.Exceptions;
-using Lib.Application.Models;
+using Lib.Application.Exceptions;
 using Book = Lib.Application.Models.Book;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Abstractions.Authors;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class AddBookUseCase
+    public class AddBookUseCase : IAddBookUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -19,24 +21,27 @@ namespace Lib.Application.UseCases.Books
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Book> ExecuteAsync(string isbn, string name, Genre genre, string description, Guid authorId, CancellationToken cancellationToken)
+        public async Task<Book> ExecuteAsync(AddBookRequest request, CancellationToken cancellationToken)
         {
-            var bookModel = new Book(isbn, name, genre, description, authorId)
+            var existingBook = _unitOfWork.BooksRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
+
+            if (existingBook is not null)
+            {
+                throw new ConflictException($"Book with ISBN {request.ISBN} already exists");
+            }
+
+            var bookModel = new Book(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId)
             {
                 ImagePath = "default_image.jpg",
-                BorrowTime = null,
-                ReturnTime = null
+                BorrowTime = DateTime.MinValue,
+                ReturnTime = DateTime.MinValue
             };
-
-            var books = await _unitOfWork.BooksRepository.GetAllBooksAsync(cancellationToken);
-
-            if(books.Any(book => book.Name == name))
-            {
-                throw new ConflictException($"Book with name {name} already exists");
-            }
 
             var bookEntity = _mapper.Map<BookEntity>(bookModel);
             var addedBook = await _unitOfWork.BooksRepository.AddBookAsync(bookEntity, cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
 
             return _mapper.Map<Book>(addedBook);
         }

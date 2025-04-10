@@ -11,16 +11,14 @@ public static class InitDatabase
 
         var users = new List<UserEntity>
         {
-            new UserEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                 Name = "Admin",
                 Email = "admin@library.com",
                 PasswordHash = "$2a$11$t9PVfLca4D1.dArfDxgAhOP/8sgjOpkPbdqO/nCvNiovdP8dOu3wG",
                 Role = "Admin"
             },
-            new UserEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d471"),
                 Name = "User",
                 Email = "user@library.com",
@@ -31,40 +29,35 @@ public static class InitDatabase
 
         var authors = new List<AuthorEntity>
         {
-            new AuthorEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d472"),
                 Name = "Лев",
                 Surname = "Толстой",
                 Country = "Россия",
                 Birthday = new DateTime(1828, 9, 9)
             },
-            new AuthorEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d473"),
                 Name = "Фёдор",
                 Surname = "Достоевский",
                 Country = "Россия",
                 Birthday = new DateTime(1821, 11, 11)
             },
-            new AuthorEntity
-            {
+           new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d474"),
                 Name = "Антон",
                 Surname = "Чехов",
                 Country = "Россия",
                 Birthday = new DateTime(1860, 1, 29)
             },
-            new AuthorEntity        
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d475"),
                 Name = "Александр",
                 Surname = "Пушкин",
                 Country = "Россия",
                 Birthday = new DateTime(1799, 6, 6)
             },
-            new AuthorEntity
-            {
+           new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d476"),
                 Name = "Михаил",
                 Surname = "Лермонтов",
@@ -75,8 +68,7 @@ public static class InitDatabase
 
         var books = new List<BookEntity>
         {
-            new BookEntity
-            {
+           new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d477"),
                 Name = "Война и мир",
                 ISBN = "978-5-17-090000-1",
@@ -84,8 +76,7 @@ public static class InitDatabase
                 Description = "Роман-эпопея Льва Толстого",
                 AuthorId = authors[0].Id
             },
-            new BookEntity
-            {
+           new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d478"),
                 Name = "Анна Каренина",
                 ISBN = "978-5-17-090000-2",
@@ -93,8 +84,7 @@ public static class InitDatabase
                 Description = "Роман Льва Толстого",
                 AuthorId = authors[0].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d489"),
                 Name = "Воскресение",
                 ISBN = "978-5-17-090000-3",
@@ -102,8 +92,7 @@ public static class InitDatabase
                 Description = "Роман Льва Толстого",
                 AuthorId = authors[0].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d481"),
                 Name = "Смерть Ивана Ильича",
                 ISBN = "978-5-17-090000-4",
@@ -112,8 +101,7 @@ public static class InitDatabase
                 AuthorId = authors[0].Id
             },
 
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d482"),
                 Name = "Преступление и наказание",
                 ISBN = "978-5-17-090000-5",
@@ -121,8 +109,7 @@ public static class InitDatabase
                 Description = "Роман Фёдора Достоевского",
                 AuthorId = authors[1].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d483"),
                 Name = "Идиот",
                 ISBN = "978-5-17-090000-6",
@@ -130,8 +117,7 @@ public static class InitDatabase
                 Description = "Роман Фёдора Достоевского",
                 AuthorId = authors[1].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d484"),
                 Name = "Братья Карамазовы",
                 ISBN = "978-5-17-090000-7",
@@ -139,8 +125,7 @@ public static class InitDatabase
                 Description = "Роман Фёдора Достоевского",
                 AuthorId = authors[1].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d485"),
                 Name = "Бесы",
                 ISBN = "978-5-17-090000-8",
@@ -149,8 +134,7 @@ public static class InitDatabase
                 AuthorId = authors[1].Id
             },
 
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d486"),
                 Name = "Вишнёвый сад",
                 ISBN = "978-5-17-090000-9",
@@ -158,8 +142,7 @@ public static class InitDatabase
                 Description = "Пьеса Антона Чехова",
                 AuthorId = authors[2].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d487"),
                 Name = "Чайка",
                 ISBN = "978-5-17-090000-10",
@@ -167,8 +150,7 @@ public static class InitDatabase
                 Description = "Пьеса Антона Чехова",
                 AuthorId = authors[2].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d488"),
                 Name = "Три сестры",
                 ISBN = "978-5-17-090000-11",
@@ -176,8 +158,7 @@ public static class InitDatabase
                 Description = "Пьеса Антона Чехова",
                 AuthorId = authors[2].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d189"),
                 Name = "Дядя Ваня",
                 ISBN = "978-5-17-090000-12",
@@ -186,8 +167,7 @@ public static class InitDatabase
                 AuthorId = authors[2].Id
             },
 
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d181"),
                 Name = "Евгений Онегин",
                 ISBN = "978-5-17-090000-13",
@@ -195,8 +175,7 @@ public static class InitDatabase
                 Description = "Роман в стихах Александра Пушкина",
                 AuthorId = authors[3].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d182"),
                 Name = "Капитанская дочка",
                 ISBN = "978-5-17-090000-14",
@@ -204,8 +183,7 @@ public static class InitDatabase
                 Description = "Роман Александра Пушкина",
                 AuthorId = authors[3].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d183"),
                 Name = "Пиковая дама",
                 ISBN = "978-5-17-090000-15",
@@ -213,8 +191,7 @@ public static class InitDatabase
                 Description = "Повесть Александра Пушкина",
                 AuthorId = authors[3].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d184"),
                 Name = "Руслан и Людмила",
                 ISBN = "978-5-17-090000-16",
@@ -223,8 +200,7 @@ public static class InitDatabase
                 AuthorId = authors[3].Id
             },
 
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d185"),
                 Name = "Герой нашего времени",
                 ISBN = "978-5-17-090000-17",
@@ -232,8 +208,7 @@ public static class InitDatabase
                 Description = "Роман Михаила Лермонтова",
                 AuthorId = authors[4].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d186"),
                 Name = "Демон",
                 ISBN = "978-5-17-090000-18",
@@ -241,8 +216,7 @@ public static class InitDatabase
                 Description = "Поэма Михаила Лермонтова",
                 AuthorId = authors[4].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d187"),
                 Name = "Мцыри",
                 ISBN = "978-5-17-090000-19",
@@ -250,8 +224,7 @@ public static class InitDatabase
                 Description = "Поэма Михаила Лермонтова",
                 AuthorId = authors[4].Id
             },
-            new BookEntity
-            {
+            new() {
                 Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d188"),
                 Name = "Бородино",
                 ISBN = "978-5-17-090000-20",

@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Lib.Core.Abstractions;
-using Lib.Core.Enums;
-using Lib.Core.Exceptions;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class UploadBookImageUseCase
+    public class UploadBookImageUseCase : IUploadBookImageUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,16 +20,18 @@ namespace Lib.Application.UseCases.Books
             _fileService = fileService;
         }
 
-        public async Task<string> ExecuteAsync(Guid id, IFormFile imageFile, CancellationToken cancellationToken)
+        public async Task<string> ExecuteAsync(UploadBookImageRequest request, CancellationToken cancellationToken)
         {
-            if (imageFile == null || imageFile.Length == 0)
+            if (request.imageFile == null || request.imageFile.Length == 0)
             {
-                throw new ArgumentNullException(nameof(imageFile));
+                throw new ArgumentNullException(nameof(request.imageFile));
             }
 
-            var fileName = await _fileService.SaveAsync(imageFile);
-            var image = await _unitOfWork.BooksRepository.UpdateBookImageAsync(id, fileName, cancellationToken);
+            var fileName = await _fileService.SaveAsync(request.imageFile);
 
+            var image = await _unitOfWork.BooksRepository.UpdateBookImageAsync(request.id, fileName, cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return image;
         }
     }

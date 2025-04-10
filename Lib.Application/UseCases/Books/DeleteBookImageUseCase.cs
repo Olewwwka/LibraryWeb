@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
+using Lib.Application.Abstractions.Books;
+using Lib.Application.Exceptions;
 using Lib.Core.Abstractions;
-using Lib.Core.Enums;
-using Lib.Core.Exceptions;
-using Microsoft.AspNetCore.Http;
+using Lib.Core.Abstractions.Repositories;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class DeleteBookImageUseCase
+    public class DeleteBookImageUseCase : IDeleteBookImageUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,16 +18,26 @@ namespace Lib.Application.UseCases.Books
             _fileService = fileService;
         }
 
-        public async Task<string> ExecuteAsync(Guid id, string fileName, CancellationToken cancellationToken)
+        public async Task<string> ExecuteAsync(Guid id, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(fileName))
+
+            var book = await _unitOfWork.BooksRepository.GetBookByIdAsync(id, cancellationToken);
+
+            if (book == null)
             {
-                throw new ArgumentNullException(nameof(fileName));
+                throw new NotFoundException($"Book with id {id} is not found");
             }
 
-            _fileService.Delete(fileName);
+            if (book.ImagePath == "default_image.jpg")
+            {
+                throw new ArgumentNullException("Book dont have uploaded image!");
+            }
+
+            _fileService.Delete(book.ImagePath);
 
             var result = await _unitOfWork.BooksRepository.DeleteBookImageAsync(id, cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return result;
         }

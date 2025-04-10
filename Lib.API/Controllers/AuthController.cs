@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RegisterRequest = Lib.API.Contracts.RegisterRequest;
-using LoginRequest = Lib.API.Contracts.LoginRequest;
 using Lib.Application.UseCases.Auth;
+using AutoMapper;
+using Lib.Application.Contracts.Requests;
+using Lib.API.DTOs.Auth;
+using Lib.Application.Abstractions;
 
 namespace Lib.API.Controllers
 {
@@ -9,34 +11,36 @@ namespace Lib.API.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        public LoginUseCase _loginUseCase;
-        public RegisterUseCase _registerUseCase;
+        public ILoginUseCase _loginUseCase;
+        public IRegisterUseCase _registerUseCase;
+        private readonly IMapper _mapper;
 
-        public AuthController(LoginUseCase loginUseCase,
-            RegisterUseCase registerUseCase)
+        public AuthController(
+            IMapper mapper,
+            ILoginUseCase loginUseCase,
+            IRegisterUseCase registerUseCase)
         {
             _loginUseCase = loginUseCase;
             _registerUseCase = registerUseCase;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
-        public async Task<IResult> Register(RegisterRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> Register([FromBody]RegisterDTO registerDTO, CancellationToken cancellationToken)
         { 
-            var user = await _registerUseCase.ExecuteAsync(request.Name, request.Email, request.Password, cancellationToken);
 
-            return Results.Ok(new
-            {
-                user.Id,
-                user.Email,
-                user.Name,
-                user.Role
-            });
+            var request = _mapper.Map<RegisterRequest>(registerDTO);
+            var response = await _registerUseCase.ExecuteAsync(request, cancellationToken);
+
+            return Results.Ok(response);
         }
 
         [HttpPost("login")]
-        public async Task<IResult> Login(LoginRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> Login([FromBody]LoginDTO loginDTO, CancellationToken cancellationToken)
         {
-            var (user, accessToken, refreshToken) = await _loginUseCase.ExecuteAsync(request.Email, request.Password, cancellationToken);
+            var request = _mapper.Map<LoginRequest>(loginDTO);
+
+            var response = await _loginUseCase.ExecuteAsync(request, cancellationToken);
 
             var cookieOptions = new CookieOptions
             {
@@ -47,15 +51,15 @@ namespace Lib.API.Controllers
             };
 
             var Responce = HttpContext.Response;
-            Responce.Cookies.Append("jwtToken", accessToken, cookieOptions);
-            Responce.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+            Responce.Cookies.Append("jwtToken", response.AccessToken, cookieOptions);
+            Responce.Cookies.Append("refreshToken", response.RefreshToken, cookieOptions);
 
             return Results.Ok(new
             {
-                user.Id,
-                user.Email,
-                user.Name,
-                user.Role,
+                response.Id,
+                response.Email,
+                response.Name,
+                response.Role,
             });
         }
     }

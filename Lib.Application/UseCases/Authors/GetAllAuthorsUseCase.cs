@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
+using Lib.Application.Abstractions.Authors;
 using Lib.Application.Models;
+using Lib.Core.Abstractions.Repositories;
 
 namespace Lib.Application.UseCases.Authors
 {
-    public class GetAllAuthorsUseCase
+    public class GetAllAuthorsUseCase : IGetAllAuthorsUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

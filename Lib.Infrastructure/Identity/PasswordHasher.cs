@@ -1,4 +1,4 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Services;
 
 namespace Lib.Infrastructure.Identity
 {

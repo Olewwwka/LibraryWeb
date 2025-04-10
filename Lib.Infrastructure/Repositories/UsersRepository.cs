@@ -17,11 +17,12 @@ namespace Lib.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<UserEntity> GetUserByIdAsync(Guid id)
+        public async Task<UserEntity> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(user => user.Id == id);
+                .Include(user => user.BorrowedBooks)
+                .FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
             return user;
         }
 

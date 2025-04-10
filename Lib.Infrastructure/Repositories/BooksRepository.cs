@@ -94,7 +94,7 @@ namespace Lib.Infrastructure.Repositories
 
             await _context.Books
                 .Where(book => book.Id == id)
-               .ExecuteUpdateAsync(book => book
+                .ExecuteUpdateAsync(book => book
                     .SetProperty(book => book.ImagePath, imagePath),
                     cancellationToken);
 
@@ -107,7 +107,7 @@ namespace Lib.Infrastructure.Repositories
 
             await _context.Books
                 .Where(book => book.Id == id)
-               .ExecuteUpdateAsync(book => book
+                .ExecuteUpdateAsync(book => book
                     .SetProperty(book => book.ImagePath, "default_image.jpg"),
                     cancellationToken);
 
@@ -115,7 +115,7 @@ namespace Lib.Infrastructure.Repositories
         }
 
 
-        public async Task<Guid> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken)
+        public async Task<BookEntity> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -129,16 +129,16 @@ namespace Lib.Infrastructure.Repositories
                 _context.Update(bookEntity);
             }
 
-            return bookEntity.Id;
+            return bookEntity;
         }
 
         public async Task<Guid> RemoveBookAsync(Guid id, CancellationToken cancellationToken)
         {
-            var book = await _context.Authors.FindAsync(id, cancellationToken);
+            var book = await _context.Books.FindAsync(id, cancellationToken);
 
             if (book != null)
             {
-                _context.Authors.Remove(book);
+                _context.Books.Remove(book);
             }
 
             return book.Id;

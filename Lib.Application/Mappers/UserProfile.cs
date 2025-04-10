@@ -8,6 +8,7 @@ namespace Lib.Application.Mappers
     {
         public UserProfile()
         {
+
             CreateMap<User, UserEntity>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role)) 

@@ -11,7 +11,7 @@ namespace Lib.Core.Abstractions.Repositories
         Task<BookEntity> GetBookByIdAsync(Guid id, CancellationToken cancellationToken);
         Task<BookEntity> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken);
         Task<BookEntity> AddBookAsync(BookEntity book, CancellationToken cancellationToken);
-        Task<Guid> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken);
+        Task<BookEntity> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken);
         Task<Guid> RemoveBookAsync(Guid id, CancellationToken cancellationToken);
         Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken);
         Task<(List<BookEntity> Books, int TotalCount)> GetBooksByGenreAsync(Genre genre, int pageNumber, int pageSize, CancellationToken cancellationToken);

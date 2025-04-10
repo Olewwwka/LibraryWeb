@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using Lib.Core.Abstractions;
 using Lib.Application.Models;
-using Lib.Core.Exceptions;
+using Lib.Application.Exceptions;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Application.Abstractions.Books;
 
 namespace Lib.Application.UseCases.Books
 {
-    public class GetBookByISBNUseCase
+    public class GetBookByISBNUseCase : IGetBookByISBNUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

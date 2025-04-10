@@ -1,4 +1,4 @@
-﻿using Lib.Core.Abstractions;
+﻿using Lib.Core.Abstractions.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +13,16 @@ namespace Lib.Infrastructure.Repositories
         public IUsersRepository UsersRepository { get; }
         public IBooksRepository BooksRepository { get; }
         public IAuthorsRepository AuthorsRepository { get; }
-        public UnitOfWork(LibraryDbContext dbcontext)
+        public UnitOfWork(
+            LibraryDbContext dbcontext,
+            IAuthorsRepository AuthorsRepository,
+            IUsersRepository UsersRepository,
+            IBooksRepository BooksRepository)
         {
-            _dbContext = dbcontext;
-            UsersRepository = new UsersRepository(_dbContext);
-            BooksRepository = new BooksRepository(_dbContext);
-            AuthorsRepository = new AuthorsRepository(_dbContext);
+           _dbContext = dbcontext;
+            this.UsersRepository = UsersRepository;
+            this.AuthorsRepository = AuthorsRepository;
+            this.BooksRepository = BooksRepository;
         }
         public async Task SaveChangesAsync(CancellationToken cancellationToken)
         {

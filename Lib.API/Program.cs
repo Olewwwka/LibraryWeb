@@ -15,27 +15,13 @@ using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using Microsoft.Extensions.FileProviders;
 using Lib.Application;
-using Library.Infrastructure.Data;
 using Lib.Application.Mappers;
+using Lib.Core.Abstractions.Repositories;
+using Lib.Core.Abstractions.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
-
-services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins(
-            "http://localhost:4200",
-            "http://localhost:80",
-            "http://localhost:5000"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-    });
-});
 
 
 services.AddControllers();
@@ -51,7 +37,7 @@ services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 services.AddDbContext<LibraryDbContext>(options =>
 {
     options.UseNpgsql(configuration.GetConnectionString(nameof(LibraryDbContext)),
-        npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+    npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
 });
 
 services.AddApiAutorization(configuration,
@@ -69,7 +55,9 @@ services.AddScoped<ITokenService, TokenService>();
 
 services.AddScoped<IBooksRepository, BooksRepository>();
 services.AddScoped<IUsersRepository, UsersRepository>();
+services.AddScoped<IAuthorsRepository, AuthorsRepository>();
 
+services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 services.AddScoped<INotificationService, NotificationService>();
 services.AddHostedService<BooksOverdueService>();
@@ -96,13 +84,6 @@ if (!File.Exists(defaultImagePath))
     {
         File.Copy(sourceImagePath, defaultImagePath);
     }
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    var service = scope.ServiceProvider;
-    var context = service.GetRequiredService<LibraryDbContext>();
-    InitDatabase.Initialize(context);
 }
 
 app.UseSwagger();

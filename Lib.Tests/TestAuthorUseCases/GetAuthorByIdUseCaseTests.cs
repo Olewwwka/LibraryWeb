@@ -15,7 +15,7 @@ namespace Lib.Tests.TestAuthorUseCases
         private readonly Mock<IMapper> _mockMapper;
         private readonly GetAuthorByIdUseCase _useCase;
 
-       /* public GetAuthorByIdUseCaseTests()
+        public GetAuthorByIdUseCaseTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
@@ -45,6 +45,6 @@ namespace Lib.Tests.TestAuthorUseCases
                 .ReturnsAsync((AuthorEntity)null);
 
             await Assert.ThrowsAsync<NotFoundException>(() => _useCase.ExecuteAsync(id, CancellationToken.None));
-        }*/
+        }
     }
 }

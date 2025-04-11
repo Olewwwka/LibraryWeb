@@ -15,7 +15,7 @@ namespace Lib.Tests.TestAuthorUseCases
         private readonly Mock<IMapper> _mockMapper;
         private readonly GetAllAuthorsUseCase _useCase;
 
-   /*     public GetAllAuthorsUseCaseTests()
+        public GetAllAuthorsUseCaseTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
@@ -34,6 +34,6 @@ namespace Lib.Tests.TestAuthorUseCases
 
             var result = await _useCase.ExecuteAsync(CancellationToken.None);
             Assert.Single(result);
-        }*/
+        }
     }
 }

@@ -6,6 +6,7 @@ using Lib.Core.Entities;
 using Lib.Application.Exceptions;
 using Moq;
 using Xunit;
+using Lib.Application.Contracts.Requests;
 
 namespace Lib.Tests.TestAuthorUseCases
 {
@@ -15,7 +16,7 @@ namespace Lib.Tests.TestAuthorUseCases
         private readonly Mock<IMapper> _mockMapper;
         private readonly GetAuthorBooksUseCase _useCase;
 
-   /*     public GetAuthorBooksUseCaseTests()
+        public GetAuthorBooksUseCaseTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
@@ -37,10 +38,12 @@ namespace Lib.Tests.TestAuthorUseCases
 
             _mockMapper.Setup(m => m.Map<List<Book>>(bookEntities)).Returns(books);
 
-            var (resultBooks, count) = await _useCase.ExecuteAsync(id, 1, 10, CancellationToken.None);
+            var request = new GetAllAuthorBooksRequest(id, 1, 10);
 
-            Assert.Single(resultBooks);
-            Assert.Equal(1, count);
+            var result = await _useCase.ExecuteAsync(request, CancellationToken.None);
+
+            Assert.Single(result.Books);
+            Assert.Equal(1, result.TotalPages);
         }
 
         [Fact]
@@ -49,8 +52,8 @@ namespace Lib.Tests.TestAuthorUseCases
             var id = Guid.NewGuid();
             _mockUnitOfWork.Setup(u => u.AuthorsRepository.GetAuthrorByIdAsync(id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((AuthorEntity)null);
-
-            await Assert.ThrowsAsync<NotFoundException>(() => _useCase.ExecuteAsync(id, 1, 10, CancellationToken.None));
-        }*/
+            var request = new GetAllAuthorBooksRequest(id, 1, 10);
+            await Assert.ThrowsAsync<NotFoundException>(() => _useCase.ExecuteAsync(request, CancellationToken.None));
+        }
     }
 }

@@ -4,6 +4,7 @@ using Lib.Core.Abstractions.Repositories;
 using Lib.Core.Entities;
 using Lib.Application.Exceptions;
 using Lib.Application.Models;
+using Lib.Application.Contracts.Requests;
 using Moq;
 using Xunit;
 
@@ -22,27 +23,30 @@ namespace Lib.Tests.TestAuthorUseCases
             _useCase = new UpdateAuthorInfoUseCase(_mockUnitOfWork.Object, _mockMapper.Object);
         }
 
-       /* [Fact]
+        [Fact]
         public async Task Should_Update_Author_When_Found()
         {
             var id = Guid.NewGuid();
-            var authorModel = new Author("Leha", "Popovich", DateTime.Now, "Russia")
-            {
-                Id = id
-            };
+            var request = new UpdateAuthorRequest(
+                Id: id,
+                Name: "Leha",
+                Surname: "Popovich",
+                Country: "Russia",
+                Birthday: DateTime.Now
+            );
 
             var authorEntity = new AuthorEntity { Id = id };
 
             _mockUnitOfWork.Setup(u => u.AuthorsRepository.GetAuthrorByIdAsync(id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authorEntity);
 
-            _mockMapper.Setup(m => m.Map<AuthorEntity>(authorModel))
+            _mockMapper.Setup(m => m.Map<AuthorEntity>(request))
                 .Returns(authorEntity);
 
-            _mockUnitOfWork.Setup(u => u.AuthorsRepository.UpdateAuthorAsync(authorEntity, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(id);
+            _mockUnitOfWork.Setup(u => u.AuthorsRepository.UpdateAuthor(authorEntity))
+                .Returns(id);
 
-            var result = await _useCase.ExecuteAsync(id, authorModel, CancellationToken.None);
+            var result = await _useCase.ExecuteAsync(request, CancellationToken.None);
 
             Assert.Equal(id, result);
             _mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -52,16 +56,19 @@ namespace Lib.Tests.TestAuthorUseCases
         public async Task Should_Throw_If_Author_Not_Found()
         {
             var id = Guid.NewGuid();
-            var authorModel = new Author("Leha", "Popovich", DateTime.Now, "Russia")
-            {
-                Id = id
-            };
+            var request = new UpdateAuthorRequest(
+                Id: id,
+                Name: "Leha",
+                Surname: "Popovich",
+                Country: "Russia",
+                Birthday: DateTime.Now
+            );
 
             _mockUnitOfWork.Setup(u => u.AuthorsRepository.GetAuthrorByIdAsync(id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((AuthorEntity)null);
 
             await Assert.ThrowsAsync<NotFoundException>(() =>
-                _useCase.ExecuteAsync(id, authorModel, CancellationToken.None));
-        }*/
+                _useCase.ExecuteAsync(request, CancellationToken.None));
+        }
     }
 }

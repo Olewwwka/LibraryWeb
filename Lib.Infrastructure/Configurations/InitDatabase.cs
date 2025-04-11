@@ -9,6 +9,8 @@ public static class InitDatabase
     public static void Initialize(ModelBuilder modelBuilder)
     {
 
+
+
         var users = new List<UserEntity>
         {
             new() {
@@ -238,4 +240,7 @@ public static class InitDatabase
         modelBuilder.Entity<AuthorEntity>().HasData(authors);
         modelBuilder.Entity<BookEntity>().HasData(books);
     }
+
+
+
 }

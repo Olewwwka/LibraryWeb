@@ -23,11 +23,45 @@ FROM build AS publish
 COPY ["Lib.API/Uploads/", "/app/publish/Uploads/"]
 RUN dotnet publish "Lib.API.csproj" -c Release -o /app/publish
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
+COPY --from=build /src/Lib.API /app/src/Lib.API
+COPY --from=build /src/Lib.Infrastructure /app/src/Lib.Infrastructure
+COPY --from=build /src/Lib.Application /app/src/Lib.Application
+COPY --from=build /src/Lib.Core /app/src/Lib.Core
+
 RUN if [ ! -d "/app/Uploads" ]; then mkdir -p /app/Uploads; fi && \
     chown -R 1000:1000 /app/Uploads && \
     chmod -R 755 /app/Uploads
+
+RUN apt-get update && \
+    apt-get install -y postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+until PGPASSWORD=1111 psql -h "postgres" -U "admin" -d "LibraryWeb" -c "\\q"; do\n\
+  >&2 echo "Postgres is unavailable - sleeping"\n\
+  sleep 1\n\
+done\n\
+\n\
+>&2 echo "Postgres is up - creating migrations"\n\
+cd /app/src\n\
+dotnet restore Lib.API/Lib.API.csproj\n\
+dotnet build Lib.API/Lib.API.csproj\n\
+dotnet ef migrations add Initial -s Lib.API -p Lib.Infrastructure\n\
+\n\
+>&2 echo "Applying migrations"\n\
+dotnet ef database update -s Lib.API -p Lib.Infrastructure\n\
+\n\
+>&2 echo "Starting application"\n\
+cd /app\n\
+dotnet Lib.API.dll' > /app/entrypoint.sh && \
+chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

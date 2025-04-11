@@ -18,6 +18,8 @@ namespace Lib.Application.Services
         }
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+
+            await Task.Delay(TimeSpan.FromMinutes(3), cancellationToken);
             while (!cancellationToken.IsCancellationRequested)
             {
                 using var scope = _serviceProvider.CreateScope();

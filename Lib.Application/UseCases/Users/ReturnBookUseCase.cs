@@ -34,7 +34,7 @@ namespace Lib.Application.UseCases.Users
                 throw new NotFoundException($"User with id {request.UserId} not found");
             }
 
-            if (userEntity.BorrowedBooks!.Any(book => book == bookEntity))
+            if (bookEntity.UserId is not null && bookEntity.UserId != request.UserId)
             {
                 throw new NotFoundException($"User with id {request.UserId} not have book with id {request.BookId}");
             }

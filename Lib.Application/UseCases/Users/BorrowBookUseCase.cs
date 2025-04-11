@@ -28,6 +28,12 @@ namespace Lib.Application.UseCases.Users
                 throw new NotFoundException($"Book with id {request.bookId} not found");
             }
 
+            if(bookEntity.UserId is not null)
+            {
+                throw new ConflictException($"Book with id {request.bookId} already borrowed");
+            }
+
+
             var userEntity = await _unitOfWork.UsersRepository.GetUserByIdAsync(request.userId, cancellationToken);
 
             if (userEntity is null)

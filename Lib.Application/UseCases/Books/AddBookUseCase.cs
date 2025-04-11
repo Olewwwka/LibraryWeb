@@ -34,7 +34,7 @@ namespace Lib.Application.UseCases.Books
 
             if (existingAuthor is null)
             {
-                throw new ConflictException($"Author with Id {request.AuthorId} not found exists");
+                throw new ConflictException($"Author with Id {request.AuthorId} not found");
             }
 
             var bookModel = new Book(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId)

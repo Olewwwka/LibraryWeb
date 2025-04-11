@@ -39,36 +39,17 @@ namespace Lib.Infrastructure.Repositories
             return authorEntity;
         }
 
-        public async Task<Guid> UpdateAuthorAsync(
-            AuthorEntity authorEntity,
-            CancellationToken cancellationToken)
-
+        public Guid UpdateAuthor(AuthorEntity authorEntity)
         {
-            cancellationToken.ThrowIfCancellationRequested();
 
-            var currentAuthor = await _context.Authors.FindAsync(authorEntity.Id, cancellationToken);
-            if (currentAuthor != null)
-            {
-                _context.Entry(currentAuthor).CurrentValues.SetValues(authorEntity);
-            }
-            else
-            {
-                _context.Update(authorEntity);
-            }
-
+            _context.Update(authorEntity);
             return authorEntity.Id;
         }
 
-        public async Task<Guid> RemoveAuthorAsync(Guid authorId, CancellationToken cancellationToken)
+        public Guid RemoveAuthor(AuthorEntity authorEntity)
         {
-            var author = await _context.Authors.FindAsync(authorId, cancellationToken);
-
-            if (author != null)
-            {
-                _context.Authors.Remove(author);
-            }
-
-            return author.Id;
+            _context.Authors.Remove(authorEntity);
+            return authorEntity.Id;
         }
 
         public async Task<(List<BookEntity> Books, int TotalCount)> GetBooksByAuthorAsync(Guid authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)

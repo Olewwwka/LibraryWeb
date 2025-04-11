@@ -101,47 +101,16 @@ namespace Lib.Infrastructure.Repositories
             return imagePath;
         }
 
-        public async Task<string> DeleteBookImageAsync(Guid id, CancellationToken cancellationToken)
+        public BookEntity UpdateBook(BookEntity bookEntity)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _context.Books
-                .Where(book => book.Id == id)
-                .ExecuteUpdateAsync(book => book
-                    .SetProperty(book => book.ImagePath, "default_image.jpg"),
-                    cancellationToken);
-
-            return "default_image.jpg";
-        }
-
-
-        public async Task<BookEntity> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var currentBook = await _context.Authors.FindAsync(bookEntity.Id, cancellationToken);
-            if (currentBook != null)
-            {
-                _context.Entry(currentBook).CurrentValues.SetValues(bookEntity);
-            }
-            else
-            {
-                _context.Update(bookEntity);
-            }
-
+            _context.Update(bookEntity);
             return bookEntity;
         }
 
-        public async Task<Guid> RemoveBookAsync(Guid id, CancellationToken cancellationToken)
+        public Guid RemoveBook(BookEntity bookEntity)
         {
-            var book = await _context.Books.FindAsync(id, cancellationToken);
-
-            if (book != null)
-            {
-                _context.Books.Remove(book);
-            }
-
-            return book.Id;
+            _context.Books.Remove(bookEntity);
+            return bookEntity.Id;
         }
 
         public async Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken)
@@ -149,7 +118,7 @@ namespace Lib.Infrastructure.Repositories
             cancellationToken.ThrowIfCancellationRequested();
             var books = await _context.Books
                 .AsNoTracking()
-                .Where(book => book.ReturnTime > DateTime.UtcNow)
+                .Where(book => book.ReturnTime < DateTime.UtcNow && book.ReturnTime != DateTime.MinValue)
                 .Include(book => book.User)
                 .ToListAsync(cancellationToken);
             return books;

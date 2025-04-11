@@ -28,7 +28,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("book/borrow")]
-        [Authorize]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<IResult> BorrowBook([FromBody]BorrowBookRequest request, CancellationToken cancellationToken)
         {
             
@@ -38,7 +38,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("book/return/{userId}/{bookId}")]
-        [Authorize]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<IResult> ReturnBook(Guid userId, Guid bookId, CancellationToken cancellationToken)
         {
             var request = new ReturnBookRequest(userId, bookId);

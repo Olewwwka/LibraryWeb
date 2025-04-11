@@ -13,6 +13,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d LibraryWeb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:alpine
@@ -34,6 +39,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=LibraryWeb
+      - DB_USER=admin
+      - DB_PASSWORD=1111
       - ConnectionStrings__LibraryDbContext=Host=postgres;Port=5432;Database=LibraryWeb;Username=admin;Password=1111
       - ConnectionStrings__Redis=redis:6379
       - JwtOptions__SecretKey=SuperPuperSecretAmazinkKey123321
@@ -44,8 +54,10 @@ services:
     volumes:
       - ./Lib.API/Uploads:/app/Uploads
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     restart: unless-stopped
 
 volumes:

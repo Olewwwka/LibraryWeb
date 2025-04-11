@@ -1,12 +1,19 @@
 set -e
 
-until PGPASSWORD=1111 psql -h "postgres" -U "admin" -d "LibraryWeb" -c '\q'; do
+echo "Waiting for PostgreSQL to become available..."
+
+until PGPASSWORD=$DB_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
 
->&2 echo "Postgres is up - executing migrations"
-dotnet ef database update -s ./Lib.API/ -p ./Lib.Infrastructure/
+>&2 echo "PostgreSQL is up - checking for migrations"
 
->&2 echo "Starting application"
-dotnet Lib.API.dll 
+export PATH="$PATH:/root/.dotnet/tools"
+
+dotnet ef database update --project ../Lib.Infrastructure --startup-project .
+
+>&2 echo "Database migrations applied"
+
+>&2 echo "Starting application..."
+dotnet Lib.API.dll

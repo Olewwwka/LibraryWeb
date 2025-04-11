@@ -22,23 +22,23 @@ namespace Lib.Application.UseCases.Books
         public async Task<Book> ExecuteAsync(UpdateBookInfoRequest request, CancellationToken cancellationToken)
         {
             var bookEntity = await _unitOfWork.BooksRepository.GetBookByIdAsync(request.Id, cancellationToken);
-
             if (bookEntity is null)
             {
                 throw new NotFoundException($"Book with ID {request.Id} is not found");
             }
 
-            var existingBook = _unitOfWork.BooksRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
-
-            if (existingBook is not null)
+            if (bookEntity.ISBN != request.ISBN)
             {
-                throw new ConflictException($"Book with ISBN {request.ISBN} already exists");
+                var existingBook = await _unitOfWork.BooksRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
+                if (existingBook is not null)
+                {
+                    throw new ConflictException($"Book with ISBN {request.ISBN} already exists");
+                }
             }
 
-            var bookToUp = _mapper.Map<BookEntity>(request);
+            _mapper.Map(request, bookEntity);
 
-            var book = await _unitOfWork.BooksRepository.UpdateBookAsync(bookToUp, cancellationToken);
-
+            _unitOfWork.BooksRepository.UpdateBook(bookEntity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<Book>(bookEntity);

@@ -21,7 +21,6 @@ namespace Lib.API.Controllers
         public IGetBooksByGenreAndAuthorUseCase _getBooksByGenreAndAuthorUseCase;
         public IUploadBookImageUseCase _uploadBookImageUseCase;
         public IDeleteBookImageUseCase _deleteBookImageUseCase;
-        private readonly IMapper _mapper;
 
         public BooksController(
             IAddBookUseCase addBookUseCase,
@@ -33,8 +32,7 @@ namespace Lib.API.Controllers
             IGetBooksByGenreUseCase getBooksByGenreUseCase,
             IGetBooksByGenreAndAuthorUseCase getBooksByGenreAndAuthorUseCase,
             IUploadBookImageUseCase uploadBookImageUseCase,
-            IDeleteBookImageUseCase deleteBookImageUseCase,
-            IMapper mapper
+            IDeleteBookImageUseCase deleteBookImageUseCase
             )
         {
             _addBookUseCase = addBookUseCase;
@@ -47,7 +45,6 @@ namespace Lib.API.Controllers
             _getBooksByGenreAndAuthorUseCase = getBooksByGenreAndAuthorUseCase;
             _uploadBookImageUseCase = uploadBookImageUseCase;
             _deleteBookImageUseCase = deleteBookImageUseCase;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -106,7 +103,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> AddBook([FromBody]AddBookRequest request, CancellationToken cancellationToken)
         {
             var book = await _addBookUseCase.ExecuteAsync(request, cancellationToken);
@@ -132,8 +129,8 @@ namespace Lib.API.Controllers
             return Results.Ok(book);
         }
 
-        [HttpPatch("{id}")]
-        [Authorize(Roles = "Admin")]
+        [HttpPatch]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> UpdateBook([FromBody]UpdateBookInfoRequest request, CancellationToken cancellationToken)
         {
             var book = await _updateBookInfoUseCase.ExecuteAsync(request, cancellationToken);
@@ -142,7 +139,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> DeleteBook(Guid id, CancellationToken cancellationToken)
         {
             var bookId = await _deleteBookUseCase.ExecuteAsync(id, cancellationToken);
@@ -151,18 +148,18 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("{id}/image")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> UploadBookImage(Guid id, IFormFile imageFile, CancellationToken cancellationToken)
         {
             var request = new UploadBookImageRequest(id, imageFile);
 
             var imagePath = await _uploadBookImageUseCase.ExecuteAsync(request, cancellationToken);
 
-            return Results.Ok(new { imagePath });
+            return Results.Ok(imagePath);
         }
 
         [HttpDelete("{id}/image")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> DeleteBookImage(Guid id, CancellationToken cancellationToken)
         {
             var path = await _deleteBookImageUseCase.ExecuteAsync(id, cancellationToken);

@@ -40,7 +40,7 @@ namespace Lib.Application.UseCases.Users
             bookEntity.UserId = request.userId;
 
 
-            await _unitOfWork.BooksRepository.UpdateBookAsync(bookEntity, cancellationToken);
+            _unitOfWork.BooksRepository.UpdateBook(bookEntity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             
 

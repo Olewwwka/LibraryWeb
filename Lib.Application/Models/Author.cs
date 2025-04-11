@@ -15,5 +15,9 @@
             Birthday = birthday;
             Country = country;
         }
+        public Author()
+        {
+            
+        }
     }
 }

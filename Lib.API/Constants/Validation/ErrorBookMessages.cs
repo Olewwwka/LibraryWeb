@@ -10,6 +10,5 @@
         public const string InvalidGenre = "Invalid genre";
         public const string DescriptionLenght = "Description must contain no more than 1000 characters";
         public const string RequiredAuthorId = "Author ID is required";
-
     }
 }

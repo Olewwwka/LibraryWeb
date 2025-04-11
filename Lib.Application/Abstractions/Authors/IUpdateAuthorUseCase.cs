@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Lib.Application.Abstractions.Authors
 {
-    public interface IUpdateAuthorUseCase : IUseCase<UpdateAuthorRequest, Author> { }
+    public interface IUpdateAuthorUseCase : IUseCase<UpdateAuthorRequest, Guid> { }
 }

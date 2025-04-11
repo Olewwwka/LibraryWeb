@@ -41,8 +41,9 @@ namespace Lib.Application.UseCases.Users
 
             bookEntity.BorrowTime = DateTime.MinValue;
             bookEntity.ReturnTime = DateTime.MinValue;
-            bookEntity.UserId = bookEntity.UserId;
+            bookEntity.UserId = null;
 
+            _unitOfWork.BooksRepository.UpdateBook(bookEntity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             var book = _mapper.Map<Book>(bookEntity);

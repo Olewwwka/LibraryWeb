@@ -11,7 +11,6 @@ namespace Lib.API.Controllers
     {
         public ILoginUseCase _loginUseCase;
         public IRegisterUseCase _registerUseCase;
-        private readonly IMapper _mapper;
 
         public AuthController(
             IMapper mapper,
@@ -20,7 +19,6 @@ namespace Lib.API.Controllers
         {
             _loginUseCase = loginUseCase;
             _registerUseCase = registerUseCase;
-            _mapper = mapper;
         }
 
         [HttpPost("register")]

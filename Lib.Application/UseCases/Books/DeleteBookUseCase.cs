@@ -32,7 +32,7 @@ namespace Lib.Application.UseCases.Books
                 _fileService.Delete(book.ImagePath);
             }
 
-            var guid = await _unitOfWork.BooksRepository.RemoveBookAsync(id, cancellationToken);
+            var guid = _unitOfWork.BooksRepository.RemoveBook(book);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

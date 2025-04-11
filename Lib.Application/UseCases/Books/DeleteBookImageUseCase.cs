@@ -35,7 +35,7 @@ namespace Lib.Application.UseCases.Books
 
             _fileService.Delete(book.ImagePath);
 
-            var result = await _unitOfWork.BooksRepository.DeleteBookImageAsync(id, cancellationToken);
+            var result = await _unitOfWork.BooksRepository.UpdateBookImageAsync(id, "default_image.jpg", cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

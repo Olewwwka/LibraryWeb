@@ -40,7 +40,7 @@ namespace Lib.Application.UseCases.Auth
                 throw new InvalidCredentialsException("Invalid password");
             }
 
-            var jwtToken = _tokenService.GenerateAccessToken(existingUser);
+            var accessToken = _tokenService.GenerateAccessToken(existingUser);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             await _tokenService.StoreRefreshTokenAsync(existingUser.Id, refreshToken);
@@ -49,10 +49,10 @@ namespace Lib.Application.UseCases.Auth
 
             return new LoginResponse(
                     user.Id,
-                    user.Name,
+                    user.Email,
                     user.Name,
                     user.Role,
-                    jwtToken,
+                    accessToken,
                     refreshToken
                 );
         }

@@ -18,7 +18,7 @@ namespace Lib.Application.UseCases.Authors
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Author> ExecuteAsync(UpdateAuthorRequest request, CancellationToken cancellationToken)
+        public async Task<Guid> ExecuteAsync(UpdateAuthorRequest request, CancellationToken cancellationToken)
         {
             var existingAuthor = await _unitOfWork.AuthorsRepository.GetAuthrorByIdAsync(request.Id, cancellationToken);
 
@@ -26,16 +26,14 @@ namespace Lib.Application.UseCases.Authors
             {
                 throw new NotFoundException($"Author with id {request.Id} not found");
             }
-            
 
-            var authorEntity = await _unitOfWork.AuthorsRepository
-                .UpdateAuthorAsync(_mapper.Map<AuthorEntity>(request), cancellationToken);
+            var authorToUp = _mapper.Map<AuthorEntity>(request);
+
+            var id = _unitOfWork.AuthorsRepository.UpdateAuthor(authorToUp);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var author = _mapper.Map<Author>(authorEntity);
-
-            return author;
+            return id;
         }
     }
 }

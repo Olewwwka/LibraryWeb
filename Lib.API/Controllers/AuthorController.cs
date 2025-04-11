@@ -16,7 +16,6 @@ namespace Lib.API.Controllers
         public IUpdateAuthorUseCase _updateAuthorInfoUseCase;
         public IDeleteAuthorUseCase _deleteAuthorUseCase;
         public IGetAllAuthorsBooksUseCase _getAuthorBooksUseCase;
-        private readonly IMapper _mapper;
 
         public AuthorController(
             IAddAuthorUseCase addAuthorUseCase,
@@ -24,8 +23,8 @@ namespace Lib.API.Controllers
             IGetAllAuthorsUseCase getAllAuthorsUseCase,
             IUpdateAuthorUseCase updateAuthorInfoUseCase,
             IDeleteAuthorUseCase deleteAuthorUseCase,
-            IGetAllAuthorsBooksUseCase getAuthorBooksUseCase,
-            IMapper mapper)
+            IGetAllAuthorsBooksUseCase getAuthorBooksUseCase
+            )
         {
             _addAuthorUseCase = addAuthorUseCase;
             _getAuthorByIdUseCase = getAuthorByIdUseCase;
@@ -33,7 +32,6 @@ namespace Lib.API.Controllers
             _updateAuthorInfoUseCase = updateAuthorInfoUseCase;
             _deleteAuthorUseCase = deleteAuthorUseCase;
             _getAuthorBooksUseCase = getAuthorBooksUseCase;
-            _mapper = mapper;
         }
 
         [HttpPost]
@@ -46,7 +44,6 @@ namespace Lib.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> GetAllAuthors(CancellationToken cancellationToken)
         {
             var authors = await _getAllAuthorsUseCase.ExecuteAsync(cancellationToken);
@@ -64,7 +61,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IResult> DeleteAuthor(Guid id, CancellationToken cancellationToken)
         {
             await _deleteAuthorUseCase.ExecuteAsync(id, cancellationToken);
@@ -72,9 +69,9 @@ namespace Lib.API.Controllers
             return Results.Ok();
         }
 
-        [HttpPatch("up/{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IResult> UpdateAuthor([FromBody]UpdateAuthorRequest request, CancellationToken cancellationToken)
+        [HttpPatch("update")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IResult> UpdateAuthor(UpdateAuthorRequest request, CancellationToken cancellationToken)
         {
             var response = await _updateAuthorInfoUseCase.ExecuteAsync(request, cancellationToken);
 

@@ -11,12 +11,11 @@ namespace Lib.Core.Abstractions.Repositories
         Task<BookEntity> GetBookByIdAsync(Guid id, CancellationToken cancellationToken);
         Task<BookEntity> GetBookByISBNAsync(string isbn, CancellationToken cancellationToken);
         Task<BookEntity> AddBookAsync(BookEntity book, CancellationToken cancellationToken);
-        Task<BookEntity> UpdateBookAsync(BookEntity bookEntity, CancellationToken cancellationToken);
-        Task<Guid> RemoveBookAsync(Guid id, CancellationToken cancellationToken);
+        Guid RemoveBook(BookEntity bookEntity);
+        BookEntity UpdateBook(BookEntity bookEntity);
         Task<List<BookEntity>> GetOverdueBooksAsync(CancellationToken cancellationToken);
         Task<(List<BookEntity> Books, int TotalCount)> GetBooksByGenreAsync(Genre genre, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<(List<BookEntity> Books, int TotalCount)> GetBooksByGenreAndAuthorAsync(Genre genre, Guid authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<string> UpdateBookImageAsync(Guid id, string imagePath, CancellationToken cancellationToken);
-        Task<string> DeleteBookImageAsync(Guid id, CancellationToken cancellationToken);
     }
 }

@@ -34,13 +34,10 @@ namespace Lib.Application.Mappers
               .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath));
 
             CreateMap<UpdateBookInfoRequest, BookEntity>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.ISBN, opt => opt.MapFrom(src => src.ISBN))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-            .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => "default_image.jpg"))
-            .ForMember(dest => dest.Author, opt => opt.Ignore())
-            .ForMember(dest => dest.User, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.AuthorId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.Author, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore());
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Lib.Application.UseCases.Authors
             await _unitOfWork.AuthorsRepository.AddAuthorAsync(authorEntity, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return author;
+            return _mapper.Map<Author>(authorEntity);
         }
     }
 }

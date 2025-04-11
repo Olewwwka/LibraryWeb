@@ -22,7 +22,7 @@ namespace Lib.Application.UseCases.Authors
                 throw new NotFoundException($"Author with id {id} not found");
             } 
 
-            var authorId = await _unitOfWork.AuthorsRepository.RemoveAuthorAsync(id, cancellationToken);
+            var authorId = _unitOfWork.AuthorsRepository.RemoveAuthor(author);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return authorId;

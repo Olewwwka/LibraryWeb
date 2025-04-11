@@ -14,20 +14,17 @@ namespace Lib.API.Controllers
         public IReturnBookUseCase _returnBookUseCase;
         public IGetUsersBorrowedBooksUseCase _getUsersBorrowedBooksUseCase;
         public IRefreshTokenUseCase _refreshTokenUseCase;
-        private readonly IMapper _mapper;
 
         public UsersController(
             IBorrowBookUseCase borrowBookUseCase,
             IReturnBookUseCase returnBookUSeCase,
             IGetUsersBorrowedBooksUseCase getUsersBorrowedBooksUseCase,
-            IRefreshTokenUseCase refreshTokenUseCase,
-            IMapper mapper)
+            IRefreshTokenUseCase refreshTokenUseCase)
         {
             _borrowBookUseCase = borrowBookUseCase;
             _returnBookUseCase = returnBookUSeCase;
             _getUsersBorrowedBooksUseCase = getUsersBorrowedBooksUseCase;
             _refreshTokenUseCase = refreshTokenUseCase;
-            _mapper = mapper;
         }
 
         [HttpPost("book/borrow")]
@@ -61,6 +58,7 @@ namespace Lib.API.Controllers
         }
 
         [HttpPost("refresh-token")]
+        [Authorize]
         public async Task<IResult> RefreshToken(CancellationToken cancellationToken)
         {
                 var refreshToken = Request.Cookies["refreshToken"];

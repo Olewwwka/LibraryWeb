@@ -23,11 +23,18 @@ namespace Lib.Application.UseCases.Books
 
         public async Task<Book> ExecuteAsync(AddBookRequest request, CancellationToken cancellationToken)
         {
-            var existingBook = _unitOfWork.BooksRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
+            var existingBook = await _unitOfWork.BooksRepository.GetBookByISBNAsync(request.ISBN, cancellationToken);
 
             if (existingBook is not null)
             {
                 throw new ConflictException($"Book with ISBN {request.ISBN} already exists");
+            }
+
+            var existingAuthor = await _unitOfWork.AuthorsRepository.GetAuthrorByIdAsync(request.AuthorId, cancellationToken);
+
+            if (existingAuthor is null)
+            {
+                throw new ConflictException($"Author with Id {request.AuthorId} not found exists");
             }
 
             var bookModel = new Book(request.ISBN, request.Name, request.Genre, request.Description, request.AuthorId)
@@ -38,12 +45,14 @@ namespace Lib.Application.UseCases.Books
             };
 
             var bookEntity = _mapper.Map<BookEntity>(bookModel);
+
             var addedBook = await _unitOfWork.BooksRepository.AddBookAsync(bookEntity, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            var book = _mapper.Map<Book>(addedBook);
 
-            return _mapper.Map<Book>(addedBook);
+            return book;
         }
     }
 }

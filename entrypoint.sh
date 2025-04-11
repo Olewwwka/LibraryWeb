@@ -6,7 +6,7 @@ until PGPASSWORD=1111 psql -h "postgres" -U "admin" -d "LibraryWeb" -c '\q'; do
 done
 
 >&2 echo "Postgres is up - executing migrations"
-dotnet ef database update
+dotnet ef database update -s ./Lib.API/ -p ./Lib.Infrastructure/
 
 >&2 echo "Starting application"
 dotnet Lib.API.dll 

@@ -10,7 +10,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 using Lib.Application.Mappers;
-using Lib.Application.Services;
+using Lib.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

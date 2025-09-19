@@ -86,21 +86,6 @@ The project follows **Clean Architecture** with the following layers:
 
 ---
 
-## 🛠 Tech Stack
-
-- **Backend**: .NET 8, ASP.NET Core Web API  
-- **Database**: PostgreSQL, EF Core (Fluent API)  
-- **ORM**: Entity Framework Core  
-- **Mapping**: AutoMapper  
-- **Validation**: FluentValidation  
-- **Authentication**: ASP.NET Identity + JWT access & refresh tokens  
-- **Documentation**: Swagger / OpenAPI  
-- **Testing**: xUnit (unit tests for services and repository methods)  
-- **Frontend**: Angular 17+  
-- **Containerization**: Docker & Docker Compose  
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
